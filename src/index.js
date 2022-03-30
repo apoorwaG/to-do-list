@@ -164,8 +164,13 @@ const displayController = (() => {
         parent.removeChild(projectNode);
     };
 
-    const clearToDos = () => {
+    const clearProjectContent = () => {
+        const contentSection = document.querySelector(".content");
         deleteAllItemsv2();
+        const addItemButton = document.querySelector(".content .addButton");
+        if(addItemButton !== null){
+            contentSection.removeChild(addItemButton);
+        }
     }
 
     // adding toDos to a project
@@ -194,12 +199,102 @@ const displayController = (() => {
         });
     };
 
-    return { addProject, removeProject, clearToDos, viewProject, addToProject };
+    // function to display the add to do button
+    // returns the button node once created/displayed
+    const displayAddItemButton = (projectId) => {
+        console.log(projectId);
+        const contentSection = document.querySelector(".content");
+        const button = document.createElement("div")
+        button.classList.add("addButton");
+        button.textContent = "Add Item";
+        button.setAttribute("data-projectid", `${projectId}`);
+        contentSection.appendChild(button);
+        return button;
+    };
+
+    // function to display add form in the DOM
+    // returns the form node once displayed
+    const renderAddItemForm = (projectId) => {
+        const itemForm = document.createElement("div");
+        itemForm.classList.add("addItemForm");
+
+        const fields = [{for: "title", type: "text", textC: "Title: "},
+                        {for: "desc", type: "textarea", textC: "Description: "},
+                        {for: "date", type: "date", textC: "Date: "}];
+        fields.forEach((field) => {
+            const row = document.createElement("div");
+            row.classList.add("row");
+            const label = document.createElement("label");
+            label.setAttribute("for", field.for);
+            label.textContent = field.textC;
+            row.appendChild(label);
+
+            const input = document.createElement("input");
+            input.setAttribute("type", field.type);
+            input.setAttribute("id", field.for);
+            input.setAttribute("name", field.for);
+            if(field.for === "title" || field.for === "date"){
+                input.setAttribute("required", "true");
+            }
+            row.appendChild(input);
+
+            itemForm.appendChild(row);
+        });
+
+
+        const row = document.createElement("div");
+        const radioLabel = document.createElement("div");
+        radioLabel.classList.add("radioLabel");
+        radioLabel.textContent = "Priority: ";
+        row.appendChild(radioLabel);
+
+        const options = [{id: "low", textC: "Low"}, {id: "medium", textC: "Medium"}, {id: "high", textC: "High"}];
+        options.forEach((option) => {
+            const input = document.createElement("input");
+            input.setAttribute("type", "radio");
+            input.setAttribute("name", "priority");
+            input.setAttribute("id", option.id);
+            input.setAttribute("value", option.id);
+            if(option.id === "medium") {
+                input.setAttribute("required", "true");
+                input.setAttribute("selected", "true");
+            }
+            row.appendChild(input);
+
+            const label = document.createElement("label");
+            label.setAttribute("for", option.id);
+            label.textContent = option.textC;
+            row.appendChild(label);
+        });
+
+        itemForm.appendChild(row);
+
+        const submitButton = document.createElement("button");
+        submitButton.textContent = "Add";
+        submitButton.setAttribute("type", "submit");
+        submitButton.setAttribute("data-projectid", `${projectId}`);
+        itemForm.appendChild(submitButton);
+
+        const cancelButton = document.createElement("button");
+        cancelButton.textContent = "Cancel";
+        cancelButton.setAttribute("type", "reset");
+        itemForm.appendChild(cancelButton);
+
+        itemForm.style.display = "block";
+
+        const contentSection = document.querySelector(".content");
+        contentSection.appendChild(itemForm);
+
+        return itemForm;
+    };
+
+    return { addProject, removeProject, clearProjectContent, displayAddItemButton, renderAddItemForm, viewProject, addToProject };
 
 })();
 
 
-// logic controller; calls the functions on the displayController as well as the internal toDoList module
+// logic/reactivity controller; calls the functions on the displayController as well as the internal toDoList module
+// creates all event listeners here
 const logicController = (() => {
 
     let currentProject = null;
@@ -224,32 +319,46 @@ const logicController = (() => {
 
     // function to run once a project has been clicked
     // clear the current to do list and repopulate
+    // display the add items button for this project
     const openProject = (event) => {
         const projectNode = event.target;
         const projectId = projectNode.getAttribute("data-projectid");
         // console.log(projectNode);
-        displayController.clearToDos();
+        displayController.clearProjectContent();
         currentProject = projectNode;
         // display internal project to do items
         const project = toDoModule.viewProject(projectId);
         // display the project to Do items in the DOM
         displayController.viewProject(project, projectId);
+        // show the add item button as well
+        showAddToDoButton(projectId);
     };
 
-    const addItemsToProjectDummy = (projectid, item) => {
-        const itemId = toDoModule.addToProject(projectid, item);
-        if(projectid == currentProject.getAttribute("data-projectid")){
-            displayController.addToProject(projectid, item, itemId);
-        }
+    // reneder the add item button in the DOM
+    // add event listener to the button
+    const showAddToDoButton = (projectId) => {
+        const button = displayController.displayAddItemButton(projectId);
+        button.addEventListener('click', () => {
+            console.log(projectId);
+            const form = displayController.renderAddItemForm(projectId);
+
+        });
     };
 
-    const addToDoButton = document.querySelector(".content .addButton");
-    addToDoButton.addEventListener('click', (event) => {
-        const projectId = Math.floor(Math.random() * 3);
-        const item = { title: 'Work on to do', description: 'n/a', dueDate: 'A week Later', priority: 'high' };
-        addItemsToProjectDummy(projectId, item);
-        const item2 = {title: 'Work on table', description: 'Finish assembling the table', dueDate: 'Sometime next week', priority: 'medium'};
-        addItemsToProjectDummy(projectId, item2);
-    });
+    // const addItemsToProjectDummy = (projectid, item) => {
+    //     const itemId = toDoModule.addToProject(projectid, item);
+    //     if(projectid == currentProject.getAttribute("data-projectid")){
+    //         displayController.addToProject(projectid, item, itemId);
+    //     }
+    // };
+
+    // const addToDoButton = document.querySelector(".content .addButton");
+    // addToDoButton.addEventListener('click', (event) => {
+    //     const projectId = Math.floor(Math.random() * 3);
+    //     const item = { title: 'Work on to do', description: 'n/a', dueDate: 'A week Later', priority: 'high' };
+    //     addItemsToProjectDummy(projectId, item);
+    //     const item2 = {title: 'Work on table', description: 'Finish assembling the table', dueDate: 'Sometime next week', priority: 'medium'};
+    //     addItemsToProjectDummy(projectId, item2);
+    // });
 
 })();

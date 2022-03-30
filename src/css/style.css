@@ -5,6 +5,7 @@ body {
     grid-template-rows: min-content 1fr min-content;
     grid-template-columns: max-content 1fr;
     font-size: 12px;
+    font-family: sans-serif, serif;
 }
 
 body > * {
@@ -17,6 +18,8 @@ body > * {
 
 .sidebar {
     grid-column: 1;
+    padding-left: 2rem;
+    padding-right: 2rem;
 }
 
 .addButton {
@@ -26,10 +29,30 @@ body > * {
 
 .content {
     grid-column: 2;
+    padding-left: 2rem;
+}
+
+.content .addItemForm {
+    display: none;
+    width: 50%;
+    padding: 1rem;
+    background-color: white;
+    border: 2px solid black;
 }
 
 .content .addButton {
     margin-top: 3rem;
+    padding: 1rem;
+    border: 1px solid gray;
+    width: 4rem;
+    background-color: darkolivegreen;
+    color: white;
+    font-weight: bold;
+}
+
+.content .addButton:hover {
+    cursor: pointer;
+    transform: scale(1.03);
 }
 
 .footer {
