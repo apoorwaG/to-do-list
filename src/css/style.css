@@ -4,6 +4,7 @@ body {
     display: grid;
     grid-template-rows: min-content 1fr min-content;
     grid-template-columns: max-content 1fr;
+    font-size: 12px;
 }
 
 body > * {
@@ -18,8 +19,17 @@ body > * {
     grid-column: 1;
 }
 
+.addButton {
+    margin-top: 3rem;
+}
+
+
 .content {
     grid-column: 2;
+}
+
+.content .addButton {
+    margin-top: 3rem;
 }
 
 .footer {
