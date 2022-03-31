@@ -46,7 +46,7 @@ const projectFactory = (name) => {
 
     const getToDos = () => toDos;
 
-    const getNumToDos = () => numToDos;
+    const getNumToDos = () => toDos.length;
 
     return { getName, add, remove, getToDos, getNumToDos, visualize };
 };
@@ -201,7 +201,9 @@ const displayController = (() => {
     // project: internal project object
     // projectId: id of the project in the DOM
     // gets toDos from the internal projects module, adds it to the DOM, and adds button to each to do
+    // also returns an array of toDo item DOM nodes
     const viewProject = (project, projectId) => {
+        const projectNodes = []
         const toDos = project.getToDos();
         toDos.forEach((toDo) => {
             const item = {
@@ -210,8 +212,9 @@ const displayController = (() => {
                 dueDate: toDo.getDueDate(),
                 priority: toDo.getPriority(),
             }   
-            addToProject(projectId, item, toDo.getId());
+            projectNodes.push(addToProject(projectId, item, toDo.getId()));
         });
+        return projectNodes;
     };
 
     // function to add edit and delete buttons to the DOM toDo element
@@ -364,9 +367,9 @@ const logicController = (() => {
         // display internal project to do items
         const project = toDoModule.viewProject(projectId);
         // display the project to Do items in the DOM
-        displayController.viewProject(project, projectId);
-        // call function to add event listeners to buttons
-
+        const toDoNodes = displayController.viewProject(project, projectId);
+        // call function to add event listeners to each toDo node buttons
+        toDoNodes.forEach(addActionListeners);
         // show the add item button as well
         showAddToDoButton(projectId);
     };
