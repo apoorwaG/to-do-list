@@ -149,6 +149,16 @@ const displayController = (() => {
         });
     };
 
+    // removes to do item from DOM
+    const removeFromProject = (projectId, todoId) => {
+        const element = document.querySelector(`div[data-projectid="${projectId}"][data-todoid="${todoId}"]`);
+        if(element == null) {
+            throw new Error("Element not found in DOM");
+        }
+        const parent = element.parentNode;
+        parent.removeChild(element);
+    };
+
     const deleteAllItemsv2 = () => {
         const toDoSection = document.querySelector('.toDos');
         while(toDoSection.firstChild) {
@@ -174,18 +184,23 @@ const displayController = (() => {
     }
 
     // adding toDos to a project
+    // each toDo element has a toDo Id, project Id, and a delete and edit button with those ids
+    // return the element after creation
     const addToProject = (projectId, item, itemId) => {
         const toDoSection = document.querySelector('.toDos');
         const toDo = document.createElement("div");
         toDo.setAttribute("data-todoid", `${itemId}`);
         toDo.setAttribute("data-projectid", `${projectId}`);
         toDo.textContent = JSON.stringify(item);
+        addItemActionButtons(toDo, projectId, itemId);
         toDoSection.appendChild(toDo);
+        return toDo;
     };
 
     // function to display project items in the DOM
     // project: internal project object
     // projectId: id of the project in the DOM
+    // gets toDos from the internal projects module, adds it to the DOM, and adds button to each to do
     const viewProject = (project, projectId) => {
         const toDos = project.getToDos();
         toDos.forEach((toDo) => {
@@ -198,6 +213,27 @@ const displayController = (() => {
             addToProject(projectId, item, toDo.getId());
         });
     };
+
+    // function to add edit and delete buttons to the DOM toDo element
+    const addItemActionButtons = (toDo, projectId, itemId) => {
+        toDo.appendChild(createActionItemButton(projectId, itemId, "Delete"));
+        toDo.appendChild(createActionItemButton(projectId, itemId, "Edit"));
+    };
+
+    // create a button with the given attributes and return the element
+    const createActionItemButton = (projectId, itemId, textC) => {
+        const button = document.createElement("button");
+        button.setAttribute("data-projectid", `${projectId}`);
+        button.setAttribute("data-todoid", `${itemId}`);
+        button.textContent = textC;
+        if(textC === "Delete"){
+            button.classList.add("delete");
+        } else {
+            button.classList.add("edit");
+        }
+        return button;
+    };
+    
 
     // function to display the add to do button
     // returns the button node once created/displayed
@@ -230,11 +266,11 @@ const displayController = (() => {
             row.appendChild(label);
 
             const input = document.createElement("input");
-            input.setAttribute("type", field.type);
-            input.setAttribute("id", field.for);
-            input.setAttribute("name", field.for);
+            input.type = field.type;
+            input.id = field.for;
+            input.name = field.for;
             if(field.for === "title" || field.for === "date"){
-                input.setAttribute("required", "true");
+                input.required = true;
             }
             row.appendChild(input);
 
@@ -251,13 +287,13 @@ const displayController = (() => {
         const options = [{id: "low", textC: "Low"}, {id: "medium", textC: "Medium"}, {id: "high", textC: "High"}];
         options.forEach((option) => {
             const input = document.createElement("input");
-            input.setAttribute("type", "radio");
-            input.setAttribute("name", "priority");
-            input.setAttribute("id", option.id);
-            input.setAttribute("value", option.id);
+            input.type = "radio";
+            input.name = "priority";
+            input.id = option.id;
+            input.value = option.id;
             if(option.id === "medium") {
-                input.setAttribute("required", "true");
-                input.setAttribute("selected", "true");
+                input.required = true;
+                input.checked = true;
             }
             row.appendChild(input);
 
@@ -271,13 +307,13 @@ const displayController = (() => {
 
         const submitButton = document.createElement("button");
         submitButton.textContent = "Add";
-        submitButton.setAttribute("type", "submit");
+        submitButton.type = "submit";
         submitButton.setAttribute("data-projectid", `${projectId}`);
         itemForm.appendChild(submitButton);
 
         const cancelButton = document.createElement("button");
         cancelButton.textContent = "Cancel";
-        cancelButton.setAttribute("type", "reset");
+        cancelButton.type = "reset";
         itemForm.appendChild(cancelButton);
 
         itemForm.style.display = "block";
@@ -288,7 +324,7 @@ const displayController = (() => {
         return itemForm;
     };
 
-    return { addProject, removeProject, clearProjectContent, displayAddItemButton, renderAddItemForm, viewProject, addToProject };
+    return { addProject, removeProject, clearProjectContent, displayAddItemButton, renderAddItemForm, viewProject, addToProject, removeFromProject };
 
 })();
 
@@ -329,6 +365,8 @@ const logicController = (() => {
         const project = toDoModule.viewProject(projectId);
         // display the project to Do items in the DOM
         displayController.viewProject(project, projectId);
+        // call function to add event listeners to buttons
+
         // show the add item button as well
         showAddToDoButton(projectId);
     };
@@ -375,7 +413,8 @@ const logicController = (() => {
     };
 
     // called by add button in add to do form
-    // extracts data from the form and adds it to the appropriate project
+    // extracts data from the form and adds it to the appropriate project internally,
+    // and renders it on the DOM
     // assumes form data is validated
     const addItemToProject = (projectId, form) => {
         console.log(`Adding to project ${projectId}`);
@@ -390,7 +429,7 @@ const logicController = (() => {
         let priorityValue = null;
         const priorityOptions = form.querySelectorAll(`input[type="radio"]`);
         priorityOptions.forEach((option) => {
-            if(option.getAttribute("selected") == true){
+            if(option.checked === true){
                 priorityValue = option.value;
             }
         });
@@ -401,26 +440,34 @@ const logicController = (() => {
         const itemId = toDoModule.addToProject(projectId, item);
 
         // add item to the DOM
-        displayController.addToProject(projectId, item, itemId);
+        const toDo = displayController.addToProject(projectId, item, itemId);
+
+        // add listeners to each button in toDo element
+        addActionListeners(toDo);
+    };
+
+    // function to add delete/edit buttons along with their event listeners
+    const addActionListeners = (toDo) => {
+        const deleteButton = toDo.querySelector("button.delete");
+        deleteButton.addEventListener('click', deleteItem);
+        
+        const editButton = toDo.querySelector("button.edit");
+        editButton.addEventListener('click', editItem);
+    };
+
+    // function that gets triggered by the delete item button
+    const deleteItem = (event) => {
+        const projectId = event.target.getAttribute("data-projectid");
+        const todoId = event.target.getAttribute("data-todoid");
+
+        toDoModule.removeFromProject(projectId, todoId);
+        displayController.removeFromProject(projectId, todoId);
+    };
+
+    // function that gets triggered by the edit item button
+    const editItem = (event) => {
 
     };
 
-
-
-    // const addItemsToProjectDummy = (projectid, item) => {
-    //     const itemId = toDoModule.addToProject(projectid, item);
-    //     if(projectid == currentProject.getAttribute("data-projectid")){
-    //         displayController.addToProject(projectid, item, itemId);
-    //     }
-    // };
-
-    // const addToDoButton = document.querySelector(".content .addButton");
-    // addToDoButton.addEventListener('click', (event) => {
-    //     const projectId = Math.floor(Math.random() * 3);
-    //     const item = { title: 'Work on to do', description: 'n/a', dueDate: 'A week Later', priority: 'high' };
-    //     addItemsToProjectDummy(projectId, item);
-    //     const item2 = {title: 'Work on table', description: 'Finish assembling the table', dueDate: 'Sometime next week', priority: 'medium'};
-    //     addItemsToProjectDummy(projectId, item2);
-    // });
 
 })();
