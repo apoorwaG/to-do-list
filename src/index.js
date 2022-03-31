@@ -323,7 +323,6 @@ const logicController = (() => {
     const openProject = (event) => {
         const projectNode = event.target;
         const projectId = projectNode.getAttribute("data-projectid");
-        // console.log(projectNode);
         displayController.clearProjectContent();
         currentProject = projectNode;
         // display internal project to do items
@@ -340,10 +339,73 @@ const logicController = (() => {
         const button = displayController.displayAddItemButton(projectId);
         button.addEventListener('click', () => {
             console.log(projectId);
-            const form = displayController.renderAddItemForm(projectId);
-
+            renderAddItemForm(projectId);
         });
     };
+
+    // render the add item form in the DOM
+    // add event listeners to in-form buttoms
+    const renderAddItemForm = (projectId) => {
+        const form = displayController.renderAddItemForm(projectId);
+        const submitButton = form.querySelector("button[type=submit]");
+        submitButton.addEventListener("click", () => {
+            if(validateForm(form)){
+                addItemToProject(projectId, form);
+                removeToDoForm();
+            }
+        });
+
+        const cancelButton = form.querySelector("button[type=reset]");
+        cancelButton.addEventListener("click", removeToDoForm);
+    };
+
+    // function to remove the add toDo form from the DOM
+    const removeToDoForm = () => {
+        const toDoForm = document.querySelector(".addItemForm");
+        const parent = toDoForm.parentElement;
+        parent.removeChild(toDoForm);
+    }
+
+    // function to validate form entries
+    // returns true upon success
+    // alerts the user upon failure
+    const validateForm = (form) => {
+        console.log("Yet to implement validation!");
+        return true;
+    };
+
+    // called by add button in add to do form
+    // extracts data from the form and adds it to the appropriate project
+    // assumes form data is validated
+    const addItemToProject = (projectId, form) => {
+        console.log(`Adding to project ${projectId}`);
+    
+        // extract data and add to toDoModule and DOM
+        const item = {
+            title: form.querySelector(`input[id="title"]`).value,
+            description: form.querySelector(`input[id="desc"]`).value,
+            dueDate: form.querySelector(`input[type="date"]`).value,
+        };
+
+        let priorityValue = null;
+        const priorityOptions = form.querySelectorAll(`input[type="radio"]`);
+        priorityOptions.forEach((option) => {
+            if(option.getAttribute("selected") == true){
+                priorityValue = option.value;
+            }
+        });
+
+        item.priority = priorityValue;
+
+        // add item to internal toDoModule and get the id
+        const itemId = toDoModule.addToProject(projectId, item);
+
+        // add item to the DOM
+        displayController.addToProject(projectId, item, itemId);
+
+    };
+
+
 
     // const addItemsToProjectDummy = (projectid, item) => {
     //     const itemId = toDoModule.addToProject(projectid, item);
