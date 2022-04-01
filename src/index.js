@@ -237,7 +237,9 @@ const displayController = (() => {
     // new data is in the item object
     const editToDo = (projectId, todoId, item) => {
         const toDoNode = document.querySelector(`[data-todoid="${todoId}"][data-projectid="${projectId}"]`);
-        toDoNode.textContent = JSON.stringify(item);
+        // toDoNode.textContent = JSON.stringify(item);
+        toDoNode.querySelector(".title").textContent = item.title;
+        toDoNode.querySelector(".dueDate").textContent = item.dueDate;
     };
 
     // adding toDos to a project
@@ -248,10 +250,30 @@ const displayController = (() => {
         const toDo = document.createElement("div");
         toDo.setAttribute("data-todoid", `${itemId}`);
         toDo.setAttribute("data-projectid", `${projectId}`);
-        toDo.textContent = JSON.stringify(item);
+        // toDo.textContent = JSON.stringify(item);
+        createToDoNode(item).forEach((node) => {toDo.appendChild(node)});
+        // toDo.appendChild(createToDoNode(item));
         addItemActionButtons(toDo, projectId, itemId);
         toDoSection.appendChild(toDo);
         return toDo;
+    };
+
+    // ceate a horizontal toDoList item on the DOM and return it
+    const createToDoNode = (item) => {
+        const checkBox = document.createElement("div");
+        checkBox.classList.add("checkBox");
+        checkBox.textContent = "CBox";
+
+        const title = document.createElement("div");
+        title.classList.add("title");
+        title.textContent = item.title;
+
+        const dueDate = document.createElement("div");
+        dueDate.classList.add("dueDate");
+        dueDate.textContent = item.dueDate;
+
+        return [checkBox, title, dueDate];
+
     };
 
     // function to display project items in the DOM
