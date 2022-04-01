@@ -1,21 +1,38 @@
 import './css/style.css';
 
 // toDo item factory
-const toDoFactory = (id = null, title, description, dueDate, priority, status = false) => {
+const toDoFactory = (_id = null, _title, _description, _dueDate, _priority, _status = false) => {
+    let id = _id;
+    let title = _title;
+    let description = _description;
+    let dueDate = _dueDate;
+    let priority = _priority;
+    let status = _status;
 
     const getId = () => id;
+
     const getTitle = () => title;
+    const setTitle = (newTitle) => {title = newTitle};
+
     const getDescription = () => description;
+    const setDescription = (newDesc) => {description = newDesc};
+
     const getDueDate = () => dueDate;
+    const setDueDate = (newDueDate) => {dueDate = newDueDate};
+
     const getPriority = () => priority;
+    const setPriority = (newPriority) => {priority = newPriority};
+
     const getStatus = () => status;
+    const setStatus = (newStatus) => {status = newStatus};
 
     const summarize = () => {
         const summary = `Id: ${id}\nTitle: ${title}\nDescription: ${description}\nDue Date: ${dueDate}\nPriority: ${priority}`;
         return summary;
     }
 
-    return { getId, getTitle, getDescription, getDueDate, getPriority, getStatus, summarize };
+    return { getId, getTitle, getDescription, getDueDate, getPriority, getStatus, 
+        setTitle, setDescription, setDueDate, setPriority, setStatus, summarize };
 };
 
 // project factory
@@ -31,7 +48,7 @@ const projectFactory = (name) => {
     };
 
     const remove = (itemIndex) => {
-        if (!Boolean(toDos[itemIndex])) {
+        if(!Boolean(toDos[itemIndex])) {
             throw new Error("Cannot find item in this project!");
         }
         delete toDos[itemIndex];
@@ -44,11 +61,30 @@ const projectFactory = (name) => {
         })
     };
 
+    const getItem = (itemId) => {
+        if (!Boolean(toDos[itemId])) {
+            throw new Error("Cannot find item in this project!");
+        }
+        return toDos[itemId];
+    }
+
     const getToDos = () => toDos;
 
     const getNumToDos = () => toDos.length;
 
-    return { getName, add, remove, getToDos, getNumToDos, visualize };
+    const editToDo = (itemId, item) => {
+        if(!Boolean(toDos[itemId])) {
+            throw new Error("Cannot find item in this project!");
+        }
+        toDos[itemId].setTitle(item.title);
+        toDos[itemId].setDescription(item.description);
+        toDos[itemId].setPriority(item.priority);
+        toDos[itemId].setDueDate(item.dueDate);
+
+        console.log(toDos[itemId].summarize());
+    };
+
+    return { getName, add, remove, getItem, getToDos, getNumToDos, editToDo, visualize };
 };
 
 
@@ -88,6 +124,14 @@ const toDoModule = (() => {
     // get number of items/toDos in a project
     const getNumToDos = (projectId) => projects[projectId].getNumToDos();
 
+    // given porjectId and itemId, return that toDo item from that project
+    const getItemInProject = (projectId, itemId) => {
+        if (!Boolean(projects[projectId])) {
+            throw new Error("Project doesn't exist internally!");
+        }
+        return projects[projectId].getItem(itemId);
+    };
+
     // add a toDo item to an existing project and return the id
     const addToProject = (projectId, item) => {
         if (!Boolean(projects[projectId])) {
@@ -121,12 +165,18 @@ const toDoModule = (() => {
 
     };
 
-    return { getNumProjects, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject };
+    const editToDoInProject = (projectId, todoId, item) => {
+        if(!Boolean(projects[projectId])) {
+            throw new Error("Project doesn't exist internally!")
+        }
+        projects[projectId].editToDo(todoId, item);
+    };
+
+    return { getNumProjects, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject, getItemInProject, editToDoInProject };
 
 })();
 
 // DOM controller; adds stuff to and removes stuff from dom
-// controls the event listeners as well
 const displayController = (() => {
     const projectsSection = document.querySelector('.projects');
 
@@ -182,6 +232,13 @@ const displayController = (() => {
             contentSection.removeChild(addItemButton);
         }
     }
+
+    // edit toDo item in a project
+    // new data is in the item object
+    const editToDo = (projectId, todoId, item) => {
+        const toDoNode = document.querySelector(`[data-todoid="${todoId}"][data-projectid="${projectId}"]`);
+        toDoNode.textContent = JSON.stringify(item);
+    };
 
     // adding toDos to a project
     // each toDo element has a toDo Id, project Id, and a delete and edit button with those ids
@@ -327,7 +384,7 @@ const displayController = (() => {
         return itemForm;
     };
 
-    return { addProject, removeProject, clearProjectContent, displayAddItemButton, renderAddItemForm, viewProject, addToProject, removeFromProject };
+    return { addProject, removeProject, clearProjectContent, displayAddItemButton, renderAddItemForm, viewProject, addToProject, editToDo, removeFromProject };
 
 })();
 
@@ -415,14 +472,8 @@ const logicController = (() => {
         return true;
     };
 
-    // called by add button in add to do form
-    // extracts data from the form and adds it to the appropriate project internally,
-    // and renders it on the DOM
-    // assumes form data is validated
-    const addItemToProject = (projectId, form) => {
-        console.log(`Adding to project ${projectId}`);
-    
-        // extract data and add to toDoModule and DOM
+    // extract data from the form, package into an item object, and return it
+    const getFormData = (form) => {
         const item = {
             title: form.querySelector(`input[id="title"]`).value,
             description: form.querySelector(`input[id="desc"]`).value,
@@ -438,6 +489,19 @@ const logicController = (() => {
         });
 
         item.priority = priorityValue;
+
+        return item;
+    };
+
+    // called by add button in add to do form
+    // extracts data from the form and adds it to the appropriate project internally,
+    // and renders it on the DOM
+    // assumes form data is validated
+    const addItemToProject = (projectId, form) => {
+        console.log(`Adding to project ${projectId}`);
+    
+        // extract data and add to toDoModule and DOM
+        const item = getFormData(form);
 
         // add item to internal toDoModule and get the id
         const itemId = toDoModule.addToProject(projectId, item);
@@ -455,7 +519,7 @@ const logicController = (() => {
         deleteButton.addEventListener('click', deleteItem);
         
         const editButton = toDo.querySelector("button.edit");
-        editButton.addEventListener('click', editItem);
+        editButton.addEventListener('click', renderEditItemForm);
     };
 
     // function that gets triggered by the delete item button
@@ -468,8 +532,49 @@ const logicController = (() => {
     };
 
     // function that gets triggered by the edit item button
-    const editItem = (event) => {
+    const renderEditItemForm = (event) => {
+        const projectId = event.target.getAttribute("data-projectid");
+        const todoId = event.target.getAttribute("data-todoid");
 
+        // first get the data from the internal module
+        const toDoItem = toDoModule.getItemInProject(projectId, todoId);
+
+        // pre-fill the entry areas with stored data
+        const form = displayController.renderAddItemForm(projectId);
+        form.querySelector(`input[id="title"]`).value = toDoItem.getTitle();
+        form.querySelector(`input#desc`).value = toDoItem.getDescription();
+        form.querySelector(`input#date`).value = toDoItem.getDueDate();
+        form.querySelector(`input#${toDoItem.getPriority()}`).checked = true;
+        
+        // add listener to add/edit button
+        const editItemButton = document.querySelector("button[type='submit']");
+        editItemButton.textContent = "Submit";
+        editItemButton.addEventListener('click', () => {
+            if(validateForm(form)){
+                editItem(todoId, projectId, form);
+                removeToDoForm();
+            }
+        });
+
+        // add listener to cancel button
+        const cancelButton = form.querySelector("button[type=reset]");
+        cancelButton.addEventListener("click", removeToDoForm);
+    };
+
+    // function that gets triggered by the submit button in the edit form
+    // extracts data from the form and edits the appropriate project's toDo item internally,
+    // and renders/edits it on the DOM
+    // assumes form data is validated
+    const editItem = (todoId, projectId, form) => {
+        // extract form data
+        const item = getFormData(form);
+        console.log(item);
+        
+        // edit item data in internal module
+        toDoModule.editToDoInProject(projectId, todoId, item);
+
+        // edit item data in DOM
+        displayController.editToDo(projectId, todoId, item);
     };
 
 
