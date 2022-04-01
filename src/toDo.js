@@ -19,7 +19,7 @@ const toDoFactory = (_id = null, _title, _description, _dueDate, _priority, _sta
     const setDueDate = (newDueDate) => {dueDate = newDueDate};
 
     const getPriority = () => priority;
-    const setPriority = (newPriority) => {newPriority = priority};
+    const setPriority = (newPriority) => {priority = newPriority};
 
     const getStatus = () => status;
     const setStatus = (newStatus) => {status = newStatus};
@@ -32,3 +32,7 @@ const toDoFactory = (_id = null, _title, _description, _dueDate, _priority, _sta
     return { getId, getTitle, getDescription, getDueDate, getPriority, getStatus, 
         setTitle, setDescription, setDueDate, setPriority, setStatus, summarize };
 };
+
+export {
+    toDoFactory
+}
