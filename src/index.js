@@ -127,13 +127,23 @@ const logicController = (() => {
         addActionListeners(toDo);
     };
 
-    // function to add delete/edit buttons along with their event listeners
+    // function to event listeners to edit/delete buttons as well as the checkbox
     const addActionListeners = (toDo) => {
         const deleteButton = toDo.querySelector("button.delete");
         deleteButton.addEventListener('click', deleteItem);
         
         const editButton = toDo.querySelector("button.edit");
         editButton.addEventListener('click', renderEditItemForm);
+
+        const checkBox = toDo.querySelector(`input[type="checkBox"]`);
+        checkBox.addEventListener('click', toggleItemStatus);
+    };
+
+    // function that gets triggered by the checkBox input
+    const toggleItemStatus = (event) => {
+        const projectId = event.target.getAttribute("data-projectid");
+        const itemId = event.target.getAttribute("data-todoid");
+        toDoModule.toggleItemStatus(projectId, itemId);
     };
 
     // function that gets triggered by the delete item button

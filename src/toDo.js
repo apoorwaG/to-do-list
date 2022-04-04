@@ -25,7 +25,7 @@ const toDoFactory = (_id = null, _title, _description, _dueDate, _priority, _sta
     const setStatus = (newStatus) => {status = newStatus};
 
     const summarize = () => {
-        const summary = `Id: ${id}\nTitle: ${title}\nDescription: ${description}\nDue Date: ${dueDate}\nPriority: ${priority}`;
+        const summary = `Id: ${id}\nTitle: ${title}\nDescription: ${description}\nDue Date: ${dueDate}\nPriority: ${priority}\nStatus: ${status}`;
         return summary;
     }
 

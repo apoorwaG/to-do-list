@@ -49,7 +49,19 @@ const projectFactory = (name) => {
         console.log(toDos[itemId].summarize());
     };
 
-    return { getName, add, remove, getItem, getToDos, getNumToDos, editToDo, visualize };
+    const toggleItemStatus = (itemId) => {
+        if(!Boolean(toDos[itemId])) {
+            throw new Error("Cannot find item in this project!");
+        }
+        
+        if(toDos[itemId].getStatus() === true){
+            toDos[itemId].setStatus(false);
+        } else {
+            toDos[itemId].setStatus(true);
+        }
+    };
+
+    return { getName, add, remove, getItem, getToDos, getNumToDos, editToDo, toggleItemStatus, visualize };
 };
 
 export {

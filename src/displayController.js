@@ -75,17 +75,13 @@ const displayController = (() => {
         // toDo.textContent = JSON.stringify(item);
         createToDoNode(item).forEach((node) => {toDo.appendChild(node)});
         // toDo.appendChild(createToDoNode(item));
-        addItemActionButtons(toDo, projectId, itemId);
+        addItemActionButtons(toDo, projectId, itemId, item.status);
         toDoSection.appendChild(toDo);
         return toDo;
     };
 
-    // ceate a horizontal toDoList item on the DOM and return it
+    // ceate a horizontal toDoList item and return it
     const createToDoNode = (item) => {
-        const checkBox = document.createElement("div");
-        checkBox.classList.add("checkBox");
-        checkBox.textContent = "CBox";
-
         const title = document.createElement("div");
         title.classList.add("title");
         title.textContent = item.title;
@@ -94,7 +90,7 @@ const displayController = (() => {
         dueDate.classList.add("dueDate");
         dueDate.textContent = item.dueDate;
 
-        return [checkBox, title, dueDate];
+        return [title, dueDate];
 
     };
 
@@ -112,6 +108,7 @@ const displayController = (() => {
                 description: toDo.getDescription(),
                 dueDate: toDo.getDueDate(),
                 priority: toDo.getPriority(),
+                status: toDo.getStatus(),
             }   
             projectNodes.push(addToProject(projectId, item, toDo.getId()));
         });
@@ -119,9 +116,22 @@ const displayController = (() => {
     };
 
     // function to add edit and delete buttons to the DOM toDo element
-    const addItemActionButtons = (toDo, projectId, itemId) => {
+    const addItemActionButtons = (toDo, projectId, itemId, status) => {
+        toDo.appendChild(createStatusToggle(status, projectId, itemId));
         toDo.appendChild(createActionItemButton(projectId, itemId, "Delete"));
         toDo.appendChild(createActionItemButton(projectId, itemId, "Edit"));
+    };
+
+    // function to create a checkbox with the given attributes, and return it
+    const createStatusToggle = (status, projectId, itemId) => {
+        const checkBox = document.createElement("input");
+        checkBox.type = "checkBox";
+        checkBox.classList.add("checkBox");
+        checkBox.checked = status;
+        checkBox.setAttribute("data-projectid", `${projectId}`);
+        checkBox.setAttribute("data-todoid", `${itemId}`);
+        // checkBox.textContent = "CBox";
+        return checkBox;
     };
 
     // create a button with the given attributes and return the element

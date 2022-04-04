@@ -85,7 +85,14 @@ const toDoModule = (() => {
         projects[projectId].editToDo(todoId, item);
     };
 
-    return { getNumProjects, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject, getItemInProject, editToDoInProject };
+    const toggleItemStatus = (projectId, todoId) => {
+        if(!Boolean(projects[projectId])) {
+            throw new Error("Project doesn't exist internally!")
+        }
+        projects[projectId].toggleItemStatus(todoId);
+    };
+
+    return { getNumProjects, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject, getItemInProject, editToDoInProject, toggleItemStatus };
 
 })();
 
