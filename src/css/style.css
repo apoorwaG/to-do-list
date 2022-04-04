@@ -16,6 +16,10 @@ body > * {
     grid-column: 1 / 3;
 }
 
+.hidden {
+    display: none;
+}
+
 .sidebar {
     grid-column: 1;
     padding-left: 2rem;

@@ -8,32 +8,73 @@ import { displayController } from './displayController';
 const logicController = (() => {
 
     let currentProject = null;
-    const getNumProjects = () => toDoModule.getNumProjects();
-    const getNumToDos = (projectId) => toDoModule.getNumToDos(projectId);
 
-    const projects = ["One", "Two", "Three"];
+    // function that gets triggered by the add project button
+    // renders the field for adding projects
+    const renderAddProjectForm = (event) => {
+        // first toggle the addProjectButton so it is hidden
+        displayController.toggleDisplay(event.target);
+
+        // render the form on the DOM
+        const form = displayController.renderAddProjectForm();
+
+        // add event listeners to form buttons
+        // addProject button
+        form.querySelector("button.addProject").addEventListener('click', () => {
+            // validate form first
+            if(validateAddProjectForm(form)) {
+                addProject(form);
+                displayController.toggleDisplay(event.target);
+            }
+        });
+
+        // cancel button
+        form.querySelector("button.cancelAdd").addEventListener('click', () => {
+            removeAddProjectForm();
+            displayController.toggleDisplay(event.target);
+        });
+
+    };
 
     const addProjectButton = document.querySelector(".sidebar .addButton");
-    addProjectButton.addEventListener('click', (event) => {
-        // get the project name
-        // add to internal module as well as the display module
-        // set current project to the newly added project
-        projects.forEach((project) => {
-            const projectName = project;
-            const numProjects = getNumProjects();
-            toDoModule.addProject(projectName);
-            currentProject = displayController.addProject(projectName, numProjects);
-            currentProject.addEventListener('click', openProject);
-        });
-    });
+    addProjectButton.addEventListener('click', renderAddProjectForm);
+
+    // function that gets triggered by the add project button in the add project form
+    // assumes form data is validated
+    const addProject = (form) => {
+        const projectName = form.querySelector("input").value;
+        // add the project and get its internal id
+        const projectId = toDoModule.addProject(projectName);
+        // add project on DOM
+        const project = displayController.addProject(projectName, projectId);
+        // add listener to project
+        project.addEventListener('click', openProject);
+        // remove add project form upon addition of project and event listener 
+        removeAddProjectForm();
+        // open this project
+        openProject({target: project});
+    };
+
+    // function that gets triggered by the add project button
+    // returns true or false upon validation
+    const validateAddProjectForm = (form) => {
+        console.log("Yet to implement add project form validation");
+        return true;
+    };
+
+    // function that gets triggered by the cancel button in add project form
+    const removeAddProjectForm = () => {
+        displayController.removeAddProjectForm();
+    };
+
 
     // function to run once a project has been clicked
     // clear the current to do list and repopulate
     // display the add items button for this project
     const openProject = (event) => {
+        displayController.clearProjectContent();
         const projectNode = event.target;
         const projectId = projectNode.getAttribute("data-projectid");
-        displayController.clearProjectContent();
         currentProject = projectNode;
         // display internal project to do items
         const project = toDoModule.viewProject(projectId);

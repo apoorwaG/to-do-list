@@ -9,9 +9,11 @@ const toDoModule = (() => {
     const getNumProjects = () => numProjects;
 
     // create a new project and add to projects list
+    // returns the project's id in the internal list
     const addProject = (projectName) => {
         projects.push(projectFactory(projectName));
         numProjects += 1;
+        return projects.length - 1;
     };
 
     // remove an existing project given its id

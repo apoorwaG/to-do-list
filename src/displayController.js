@@ -2,6 +2,41 @@
 const displayController = (() => {
     const projectsSection = document.querySelector('.projects');
 
+    // function that toggles the hidden class for a given element
+    const toggleDisplay = (element) => {
+        element.classList.toggle("hidden");
+    }
+
+    const renderAddProjectForm = () => {
+        const addProjectForm = document.querySelector("div.addProjectForm");
+
+        const input = document.createElement("input");
+        input.placeholder = "Project Name"
+        input.required = true;
+        addProjectForm.appendChild(input);
+
+        const insertProjectButton = document.createElement("button");
+        insertProjectButton.classList.add("addProject");
+        insertProjectButton.textContent = "Add Project";
+
+        const cancelButton = document.createElement("button");
+        cancelButton.classList.add("cancelAdd");
+        cancelButton.textContent = "Cancel";
+
+        addProjectForm.appendChild(insertProjectButton);
+        addProjectForm.appendChild(cancelButton);
+
+        return addProjectForm;
+    }
+
+    // function to remove add project form child nodes
+    const removeAddProjectForm = () => {
+        const addProjectForm = document.querySelector(".addProjectForm");
+        while(addProjectForm.firstChild) {
+            addProjectForm.removeChild(addProjectForm.firstChild);
+        }
+    };
+
     // add new project to display and return the node
     const addProject = (projectName, projectId) => {
         const project = document.createElement("div");
@@ -238,7 +273,7 @@ const displayController = (() => {
         return itemForm;
     };
 
-    return { addProject, removeProject, clearProjectContent, displayAddItemButton, renderAddItemForm, viewProject, addToProject, editToDo, removeFromProject };
+    return {toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearProjectContent, displayAddItemButton, renderAddItemForm, viewProject, addToProject, editToDo, removeFromProject };
 
 })();
 
