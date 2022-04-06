@@ -7,8 +7,6 @@ import { displayController } from './displayController';
 // creates all event listeners here
 const logicController = (() => {
 
-    let currentProject = null;
-
     // function that gets triggered by the add project button
     // renders the field for adding projects
     const renderAddProjectForm = (event) => {
@@ -23,8 +21,12 @@ const logicController = (() => {
         form.querySelector("button.addProject").addEventListener('click', () => {
             // validate form first
             if(validateAddProjectForm(form)) {
-                addProject(form);
+                const project = addProject(form);
                 displayController.toggleDisplay(event.target);
+                // open this project
+                openProject({target: project});
+                // remove add project form upon addition of project and event listener 
+                removeAddProjectForm();
             }
         });
 
@@ -45,14 +47,11 @@ const logicController = (() => {
         const projectName = form.querySelector("input").value;
         // add the project and get its internal id
         const projectId = toDoModule.addProject(projectName);
-        // add project on DOM
+        // add project on DOM and get the node
         const project = displayController.addProject(projectName, projectId);
         // add listener to project
         project.addEventListener('click', openProject);
-        // remove add project form upon addition of project and event listener 
-        removeAddProjectForm();
-        // open this project
-        openProject({target: project});
+        return project;
     };
 
     // function that gets triggered by the add project button
@@ -69,13 +68,12 @@ const logicController = (() => {
 
 
     // function to run once a project has been clicked
-    // clear the current to do list and repopulate
+    // clear content section
     // display the add items button for this project
     const openProject = (event) => {
-        displayController.clearProjectContent();
+        displayController.clearContentSection();
         const projectNode = event.target;
         const projectId = projectNode.getAttribute("data-projectid");
-        currentProject = projectNode;
         // display internal project to do items
         const project = toDoModule.viewProject(projectId);
         // display the project to Do items in the DOM
@@ -99,24 +97,32 @@ const logicController = (() => {
     // render the add item form in the DOM
     // add event listeners to in-form buttoms
     const renderAddItemForm = (projectId) => {
+        // toggle the addItem button so it is hidden
+        const addItemButton = document.querySelector(".content .addButton");
+        displayController.toggleDisplay(addItemButton);
+
         const form = displayController.renderAddItemForm(projectId);
         const submitButton = form.querySelector("button[type=submit]");
         submitButton.addEventListener("click", () => {
             if(validateForm(form)){
                 addItemToProject(projectId, form);
-                removeToDoForm();
+                removeAddItemForm();
+                // toggle the addItem button once done
+                displayController.toggleDisplay(addItemButton);
             }
         });
 
         const cancelButton = form.querySelector("button[type=reset]");
-        cancelButton.addEventListener("click", removeToDoForm);
+        cancelButton.addEventListener("click", () => {
+            removeAddItemForm()
+            // toggle the addItem button once done
+            displayController.toggleDisplay(addItemButton);
+        });
     };
 
     // function to remove the add toDo form from the DOM
-    const removeToDoForm = () => {
-        const toDoForm = document.querySelector(".addItemForm");
-        const parent = toDoForm.parentElement;
-        parent.removeChild(toDoForm);
+    const removeAddItemForm = () => {
+        displayController.removeAddItemForm();
     }
 
     // function to validate form entries
@@ -174,7 +180,13 @@ const logicController = (() => {
         deleteButton.addEventListener('click', deleteItem);
         
         const editButton = toDo.querySelector("button.edit");
-        editButton.addEventListener('click', renderEditItemForm);
+        editButton.addEventListener('click', (event) => {
+            // before rendering the edit item form, toggle the add item button display
+            // toggle the add item button
+            const addItemButton = document.querySelector(".content .addButton");
+            displayController.toggleDisplay(addItemButton);
+            renderEditItemForm(event);
+        });
 
         const checkBox = toDo.querySelector(`input[type="checkBox"]`);
         checkBox.addEventListener('click', toggleItemStatus);
@@ -217,13 +229,19 @@ const logicController = (() => {
         editItemButton.addEventListener('click', () => {
             if(validateForm(form)){
                 editItem(todoId, projectId, form);
-                removeToDoForm();
+                removeAddItemForm();
+                // toggle the addItem button once done
+                displayController.toggleDisplay(document.querySelector(".content .addButton"));
             }
         });
 
         // add listener to cancel button
         const cancelButton = form.querySelector("button[type=reset]");
-        cancelButton.addEventListener("click", removeToDoForm);
+        cancelButton.addEventListener("click", () => {
+            removeAddItemForm();
+            // toggle the addItem button once done
+            displayController.toggleDisplay(document.querySelector(".content .addButton"));
+        });
     };
 
     // function that gets triggered by the submit button in the edit form

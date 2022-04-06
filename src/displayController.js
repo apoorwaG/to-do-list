@@ -46,16 +46,6 @@ const displayController = (() => {
         return project;
     };
 
-    const deleteAllItems = (projectNode) => {
-        // console.log(projectNode);
-        const projectId = projectNode.getAttribute("data-projectid");
-        const listItemsToDelete = document.querySelectorAll(`div.toDos [data-projectid="${projectId}"]`);
-        listItemsToDelete.forEach((node) => {
-            const nodeParent = node.parentNode;
-            nodeParent.removeChild(node);
-        });
-    };
-
     // removes to do item from DOM
     const removeFromProject = (projectId, todoId) => {
         const element = document.querySelector(`div[data-projectid="${projectId}"][data-todoid="${todoId}"]`);
@@ -66,7 +56,7 @@ const displayController = (() => {
         parent.removeChild(element);
     };
 
-    const deleteAllItemsv2 = () => {
+    const deleteAllItems = () => {
         const toDoSection = document.querySelector('.toDos');
         while(toDoSection.firstChild) {
             toDoSection.removeChild(toDoSection.firstChild);
@@ -76,17 +66,21 @@ const displayController = (() => {
     // remove project as well as the to do list items
     const removeProject = (projectNode) => {
         // deleteAllItems(projectNode);
-        deleteAllItemsv2();
+        deleteAllItems();
         const parent = projectNode.parentNode;
         parent.removeChild(projectNode);
     };
 
-    const clearProjectContent = () => {
+    const clearContentSection = () => {
         const contentSection = document.querySelector(".content");
-        deleteAllItemsv2();
+        deleteAllItems();
         const addItemButton = document.querySelector(".content .addButton");
         if(addItemButton !== null){
             contentSection.removeChild(addItemButton);
+        }
+        const addToDoForm = document.querySelector(".content .addItemForm");
+        if(addToDoForm !== null) {
+            contentSection.removeChild(addToDoForm);
         }
     }
 
@@ -273,7 +267,14 @@ const displayController = (() => {
         return itemForm;
     };
 
-    return {toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearProjectContent, displayAddItemButton, renderAddItemForm, viewProject, addToProject, editToDo, removeFromProject };
+    // function that removes the add to do item form from the DOM
+    const removeAddItemForm = () => {
+        const toDoForm = document.querySelector(".content .addItemForm");
+        const parent = toDoForm.parentElement;
+        parent.removeChild(toDoForm);
+    }
+
+    return {toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, removeFromProject };
 
 })();
 
