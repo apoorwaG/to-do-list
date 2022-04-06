@@ -51,6 +51,12 @@ const logicController = (() => {
         const project = displayController.addProject(projectName, projectId);
         // add listener to project
         project.addEventListener('click', openProject);
+        // add listener to delete button in project
+        project.querySelector(".deleteProjectButton").addEventListener('click', (event) => {
+            displayController.removeProject(project);
+            toDoModule.removeProject(projectId);
+            event.stopPropagation();
+        });
         return project;
     };
 

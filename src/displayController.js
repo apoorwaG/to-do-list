@@ -42,6 +42,14 @@ const displayController = (() => {
         const project = document.createElement("div");
         project.textContent = projectName;
         project.setAttribute("data-projectid", `${projectId}`);
+
+        const deleteButton = document.createElement("button");
+        deleteButton.classList.add("deleteProjectButton");
+        deleteButton.textContent = "X"
+        deleteButton.setAttribute("data-projectid", `${projectId}`);
+
+        project.appendChild(deleteButton);
+
         projectsSection.appendChild(project);
         return project;
     };
@@ -64,11 +72,18 @@ const displayController = (() => {
     };
 
     // remove project as well as the to do list items
+    // also remove the add item button
     const removeProject = (projectNode) => {
-        // deleteAllItems(projectNode);
         deleteAllItems();
+
         const parent = projectNode.parentNode;
         parent.removeChild(projectNode);
+
+        const addItemButton = document.querySelector(".content .addButton");
+        console.log(addItemButton);
+        const buttonParent = addItemButton.parentNode;
+        buttonParent.removeChild(addItemButton);
+
     };
 
     const clearContentSection = () => {
