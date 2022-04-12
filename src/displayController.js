@@ -1,10 +1,35 @@
+import Plus from './assets/icons/plus-thick.svg';
+import Delete from './assets/icons/delete-svgrepo-com(1).svg';
+
+
 // DOM controller; adds stuff to and removes stuff from dom
 const displayController = (() => {
-    const projectsSection = document.querySelector('.projects');
+
+    // function to populate addProject button
+    const fillAddProjectButton = (button) => {
+
+        const buttonContent = document.createElement("div");
+
+        const icon = new Image();
+        icon.src = Plus;
+
+        buttonContent.appendChild(icon);
+
+        const text = document.createElement("div")
+        text.classList.add("text");
+        text.textContent = "Add Project";
+        buttonContent.appendChild(text);
+
+        button.appendChild(buttonContent);
+    };
 
     // function that toggles the hidden class for a given element
     const toggleDisplay = (element) => {
-        element.classList.toggle("hidden");
+        if(element.style.display === "none"){
+            element.style.display = "block";
+        } else {
+            element.style.display = "none";
+        }
     }
 
     const renderAddProjectForm = () => {
@@ -15,6 +40,9 @@ const displayController = (() => {
         input.required = true;
         addProjectForm.appendChild(input);
 
+        const buttonsSection = document.createElement("div");
+        buttonsSection.classList.add("buttons");
+
         const insertProjectButton = document.createElement("button");
         insertProjectButton.classList.add("addProject");
         insertProjectButton.textContent = "Add Project";
@@ -23,8 +51,12 @@ const displayController = (() => {
         cancelButton.classList.add("cancelAdd");
         cancelButton.textContent = "Cancel";
 
-        addProjectForm.appendChild(insertProjectButton);
-        addProjectForm.appendChild(cancelButton);
+        // addProjectForm.appendChild(insertProjectButton);
+        // addProjectForm.appendChild(cancelButton);
+
+        buttonsSection.appendChild(insertProjectButton);
+        buttonsSection.appendChild(cancelButton);
+        addProjectForm.appendChild(buttonsSection);
 
         return addProjectForm;
     }
@@ -39,13 +71,16 @@ const displayController = (() => {
 
     // add new project to display and return the node
     const addProject = (projectName, projectId) => {
+        const projectsSection = document.querySelector('.projects');
         const project = document.createElement("div");
         project.textContent = projectName;
         project.setAttribute("data-projectid", `${projectId}`);
 
-        const deleteButton = document.createElement("button");
+        // const deleteButton = document.createElement("button");
+        const deleteButton = new Image();
+        deleteButton.src = Delete;
         deleteButton.classList.add("deleteProjectButton");
-        deleteButton.textContent = "X"
+        // deleteButton.textContent = "X"
         deleteButton.setAttribute("data-projectid", `${projectId}`);
 
         project.appendChild(deleteButton);
@@ -200,7 +235,10 @@ const displayController = (() => {
         const contentSection = document.querySelector(".content");
         const button = document.createElement("div")
         button.classList.add("addButton");
-        button.textContent = "Add Item";
+        // button.textContent = "Add Item";
+        const icon = new Image();
+        icon.src = Plus;
+        button.appendChild(icon);
         button.setAttribute("data-projectid", `${projectId}`);
         contentSection.appendChild(button);
         return button;
@@ -212,9 +250,9 @@ const displayController = (() => {
         const itemForm = document.createElement("div");
         itemForm.classList.add("addItemForm");
 
-        const fields = [{for: "title", type: "text", textC: "Title: "},
-                        {for: "desc", type: "textarea", textC: "Description: "},
-                        {for: "date", type: "date", textC: "Date: "}];
+        const fields = [{for: "title", type: "text", textC: "Title"},
+                        {for: "desc", type: "textarea", textC: "Description"},
+                        {for: "date", type: "date", textC: "Date"}];
         fields.forEach((field) => {
             const row = document.createElement("div");
             row.classList.add("row");
@@ -223,13 +261,22 @@ const displayController = (() => {
             label.textContent = field.textC;
             row.appendChild(label);
 
-            const input = document.createElement("input");
-            input.type = field.type;
+            let input;
+            if(field.for === "desc"){
+                input = document.createElement("textarea");
+            } else {
+                input = document.createElement("input");
+                input.type = field.type;
+            }  
             input.id = field.for;
             input.name = field.for;
             if(field.for === "title" || field.for === "date"){
                 input.required = true;
             }
+            if(field.for === "title" || field.for === "desc"){
+                input.placeholder = field.textC;
+            }
+
             row.appendChild(input);
 
             itemForm.appendChild(row);
@@ -274,7 +321,7 @@ const displayController = (() => {
         cancelButton.type = "reset";
         itemForm.appendChild(cancelButton);
 
-        itemForm.style.display = "block";
+        // itemForm.style.display = "block";
 
         const contentSection = document.querySelector(".content");
         contentSection.appendChild(itemForm);
@@ -289,7 +336,11 @@ const displayController = (() => {
         parent.removeChild(toDoForm);
     }
 
-    return {toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, removeFromProject };
+    const displayErrorMessage = (message) => {
+        alert(message);
+    };
+
+    return {fillAddProjectButton, toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, removeFromProject, displayErrorMessage };
 
 })();
 

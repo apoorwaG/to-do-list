@@ -11,7 +11,8 @@ const logicController = (() => {
     // renders the field for adding projects
     const renderAddProjectForm = (event) => {
         // first toggle the addProjectButton so it is hidden
-        displayController.toggleDisplay(event.target);
+        const addProjectButton = event.currentTarget;
+        displayController.toggleDisplay(addProjectButton);
 
         // render the form on the DOM
         const form = displayController.renderAddProjectForm();
@@ -22,7 +23,7 @@ const logicController = (() => {
             // validate form first
             if(validateAddProjectForm(form)) {
                 const project = addProject(form);
-                displayController.toggleDisplay(event.target);
+                displayController.toggleDisplay(addProjectButton);
                 // open this project
                 openProject({target: project});
                 // remove add project form upon addition of project and event listener 
@@ -33,12 +34,13 @@ const logicController = (() => {
         // cancel button
         form.querySelector("button.cancelAdd").addEventListener('click', () => {
             removeAddProjectForm();
-            displayController.toggleDisplay(event.target);
+            displayController.toggleDisplay(addProjectButton);
         });
-
     };
 
     const addProjectButton = document.querySelector(".sidebar .addButton");
+    // populate add project button
+    displayController.fillAddProjectButton(addProjectButton);
     addProjectButton.addEventListener('click', renderAddProjectForm);
 
     // function that gets triggered by the add project button in the add project form
@@ -63,7 +65,12 @@ const logicController = (() => {
     // function that gets triggered by the add project button
     // returns true or false upon validation
     const validateAddProjectForm = (form) => {
-        console.log("Yet to implement add project form validation");
+        // console.log("Yet to implement add project form validation");
+        // console.log(form.querySelector("input").value);
+        if(form.querySelector("input").value == ""){
+            displayController.displayErrorMessage("Project must have a name!");
+            return false;
+        }
         return true;
     };
 
@@ -136,6 +143,17 @@ const logicController = (() => {
     // alerts the user upon failure
     const validateForm = (form) => {
         console.log("Yet to implement validation!");
+        let message = "";
+        if (form.querySelector("input#title").value == ""){
+            message = "To do must have a title!\n"
+        } 
+        if (form.querySelector("input#date").value == ""){
+            message += "To do must have a date!\n";
+        }
+        if(Boolean(message)){
+            displayController.displayErrorMessage(message);
+            return false;
+        }
         return true;
     };
 
@@ -143,7 +161,7 @@ const logicController = (() => {
     const getFormData = (form) => {
         const item = {
             title: form.querySelector(`input[id="title"]`).value,
-            description: form.querySelector(`input[id="desc"]`).value,
+            description: form.querySelector(`textarea[id="desc"]`).value,
             dueDate: form.querySelector(`input[type="date"]`).value,
         };
 
@@ -225,7 +243,7 @@ const logicController = (() => {
         // pre-fill the entry areas with stored data
         const form = displayController.renderAddItemForm(projectId);
         form.querySelector(`input[id="title"]`).value = toDoItem.getTitle();
-        form.querySelector(`input#desc`).value = toDoItem.getDescription();
+        form.querySelector(`textarea#desc`).value = toDoItem.getDescription();
         form.querySelector(`input#date`).value = toDoItem.getDueDate();
         form.querySelector(`input#${toDoItem.getPriority()}`).checked = true;
         

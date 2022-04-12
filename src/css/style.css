@@ -1,9 +1,20 @@
+html {
+    --icons-filter-value: invert(100%) sepia(0%) saturate(0%) hue-rotate(188deg) brightness(102%) contrast(105%);
+    --outer-padding-value: 2rem;
+    --margin-value: 2rem;
+    --add-button-background: rgb(99, 168, 99);
+    --header-background: rgb(223, 168, 101);
+    /* --header-background: #65A30D; */
+    /* --header-background: #FDBA74;
+    --add-button-background: #FB923C; */
+}
+
 body {
     height: 100vh;
     margin: 0;
     display: grid;
     grid-template-rows: min-content 1fr min-content;
-    grid-template-columns: max-content 1fr;
+    grid-template-columns: 300px 1fr;
     font-size: 12px;
     font-family: sans-serif, serif;
 }
@@ -16,42 +27,156 @@ body > * {
     grid-column: 1 / 3;
 }
 
-.hidden {
-    display: none;
+.header {
+    font-size: 2rem;
+    font-weight: bold;
+    padding: 1.5rem var(--outer-padding-value);
+    color: white;
+    background-color: var(--header-background);
 }
 
 .sidebar {
     grid-column: 1;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding-left: var(--outer-padding-value);
+    padding-right: var(--outer-padding-value);
 }
 
-.addButton {
+.sidebar .projects {
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding-top: var(--margin-value);
+}
+
+.sidebar .projects div {
+    font-size: 1.1rem;
+    font-weight: normal;
+    display: grid;
+    grid-template-columns: 1fr min-content;
+    column-gap: 0.4rem;
+    word-break: break-all;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding: 0.3rem 0.3rem;
+    border-radius: 0.2rem;
+}
+
+.sidebar .projects div:hover {
+    transform: scale(1.02);
+    cursor: pointer;
+    background-color: lightgray;
+}
+
+.sidebar .projects div:active {
+    transform: scale(1);
+}
+
+.projects div:first-child {
+    margin-top: 1rem;
+}
+
+.addButton,
+.sidebar .addProjectForm {
     margin-top: 3rem;
+}
+
+.sidebar .projects .deleteProjectButton {
+    width: 2rem;
+}
+
+.sidebar .addButton {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: white;
+    background-color: var(--add-button-background);
+    padding: 0.8rem 0.5rem;
+    border-radius: 0.2rem;
+}
+
+.sidebar .addButton > div {
+    display: grid;
+    grid-template-columns: min-content max-content;
+    justify-content: space-around;
+}
+
+.sidebar .addButton img {
+    filter: var(--icons-filter-value);
+}
+
+.sidebar .addButton:active {
+    transform: scale(0.95);
+}
+
+.sidebar .addProjectForm {
+    display: grid;
+    grid-template-rows: min-content min-content;
+}
+
+.sidebar .addProjectForm input {
+    width: 100%;
+    font-size: 1rem;
+    height: 1.8rem;
+    border-style: none;
+    background-color: rgb(189, 223, 189);
+    margin-bottom: 0.5rem;
+    border-radius: 0.2rem;
+    padding-left: 0.5rem;
+    justify-self: center;
+
+}
+
+.sidebar .addProjectForm .buttons {
+    display: flex;
+}
+
+.sidebar .addProjectForm .buttons > * {
+    flex: 1 1 0;
+    padding: 0.3rem 0.2rem;
+    font-size: 1rem;
+    color: rgb(87, 87, 87);
 }
 
 
 .content {
     grid-column: 2;
-    padding-left: 2rem;
+    padding-left: var(--outer-padding-value)
 }
 
 .content .addItemForm {
-    display: none;
-    width: 50%;
+    width: clamp(500px, 50vw, 720px);
     padding: 1rem;
     background-color: white;
     border: 2px solid black;
 }
 
+.addItemForm textarea#desc {
+    resize: vertical;
+    min-height: 60px;
+    max-height: 300px;
+}
+
+.addItemForm .row label {
+    display: block;
+}
+
+.addItemForm .row input,
+.addItemForm .row textarea {
+    width: 90%;
+}
+
 .content .addButton {
     margin-top: 3rem;
     padding: 1rem;
-    border: 1px solid gray;
-    width: 4rem;
-    background-color: darkolivegreen;
+    width: 2rem;
+    background-color: var(--add-button-background);
     color: white;
     font-weight: bold;
+    text-align: center;
+    border-radius: 20%;
+
+}
+
+.content .addButton img {
+    filter: var(--icons-filter-value);
 }
 
 .content .addButton:hover {
