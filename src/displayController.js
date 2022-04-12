@@ -107,23 +107,19 @@ const displayController = (() => {
     };
 
     // remove project as well as the to do list items
-    // also remove the add item button
+    // also remove the add item button if it's displayed
+    // also remove the add item FORM if its's displayed
     const removeProject = (projectNode) => {
-        deleteAllItems();
-
-        const parent = projectNode.parentNode;
-        parent.removeChild(projectNode);
-
-        const addItemButton = document.querySelector(".content .addButton");
-        console.log(addItemButton);
-        const buttonParent = addItemButton.parentNode;
-        buttonParent.removeChild(addItemButton);
-
+        clearContentSection();
+        const projectsSection = document.querySelector(".sidebar .projects");
+        projectsSection.removeChild(projectNode);
+        console.log("Deleted project from sidebar");
+        
     };
 
     const clearContentSection = () => {
-        const contentSection = document.querySelector(".content");
         deleteAllItems();
+        const contentSection = document.querySelector(".content");
         const addItemButton = document.querySelector(".content .addButton");
         if(addItemButton !== null){
             contentSection.removeChild(addItemButton);
