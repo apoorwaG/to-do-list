@@ -2,6 +2,7 @@ import './css/style.css';
 
 import { toDoModule } from './toDoModule';
 import { displayController } from './displayController';
+import { format, addDays } from 'date-fns'; 
 
 // logic/reactivity controller; calls the functions on the displayController as well as the internal toDoList module
 // creates all event listeners here
@@ -157,13 +158,23 @@ const logicController = (() => {
         return true;
     };
 
+    const getArrangedDate = (fullDate) => {
+        const date = fullDate.split('-');
+        const arrangedDate = `${date[1]}-${date[2]}-${date[0]}`;
+        console.log(arrangedDate);
+        return new Date(`${arrangedDate}`);
+    };
+
     // extract data from the form, package into an item object, and return it
     const getFormData = (form) => {
         const item = {
             title: form.querySelector(`input[id="title"]`).value,
             description: form.querySelector(`textarea[id="desc"]`).value,
-            dueDate: form.querySelector(`input[type="date"]`).value,
+            dueDate: new Date(form.querySelector(`input[type="date"]`).value),
         };
+
+        console.log(form.querySelector(`input[type="date"]`).value);
+        // console.log(getArrangedDate(form.querySelector(`input[type="date"]`).value));
 
         let priorityValue = null;
         const priorityOptions = form.querySelectorAll(`input[type="radio"]`);
@@ -200,10 +211,10 @@ const logicController = (() => {
 
     // function to event listeners to edit/delete buttons as well as the checkbox
     const addActionListeners = (toDo) => {
-        const deleteButton = toDo.querySelector("button.delete");
+        const deleteButton = toDo.querySelector("div.delete");
         deleteButton.addEventListener('click', deleteItem);
         
-        const editButton = toDo.querySelector("button.edit");
+        const editButton = toDo.querySelector("div.edit");
         editButton.addEventListener('click', (event) => {
             // before rendering the edit item form, toggle the add item button display
             // toggle the add item button
@@ -225,17 +236,18 @@ const logicController = (() => {
 
     // function that gets triggered by the delete item button
     const deleteItem = (event) => {
-        const projectId = event.target.getAttribute("data-projectid");
-        const todoId = event.target.getAttribute("data-todoid");
+        const projectId = event.currentTarget.getAttribute("data-projectid");
+        const todoId = event.currentTarget.getAttribute("data-todoid");
 
         toDoModule.removeFromProject(projectId, todoId);
         displayController.removeFromProject(projectId, todoId);
+        event.stopPropagation();
     };
 
     // function that gets triggered by the edit item button
     const renderEditItemForm = (event) => {
-        const projectId = event.target.getAttribute("data-projectid");
-        const todoId = event.target.getAttribute("data-todoid");
+        const projectId = event.currentTarget.getAttribute("data-projectid");
+        const todoId = event.currentTarget.getAttribute("data-todoid");
 
         // first get the data from the internal module
         const toDoItem = toDoModule.getItemInProject(projectId, todoId);
@@ -244,7 +256,11 @@ const logicController = (() => {
         const form = displayController.renderAddItemForm(projectId);
         form.querySelector(`input[id="title"]`).value = toDoItem.getTitle();
         form.querySelector(`textarea#desc`).value = toDoItem.getDescription();
-        form.querySelector(`input#date`).value = toDoItem.getDueDate();
+        console.log(toDoItem.getDueDate());
+        const formattedDate = format(addDays(toDoItem.getDueDate(), 1), "yyyy-MM-dd");
+        // form.querySelector(`input#date`).value = format(toDoItem.getDueDate(), "yyyy-mm-dd");
+        // console.log(`Formatted Date: ${formattedDate}`);
+        form.querySelector(`input#date`).value = formattedDate;
         form.querySelector(`input#${toDoItem.getPriority()}`).checked = true;
         
         // add listener to add/edit button
@@ -266,6 +282,8 @@ const logicController = (() => {
             // toggle the addItem button once done
             displayController.toggleDisplay(document.querySelector(".content .addButton"));
         });
+
+        event.stopPropagation();
     };
 
     // function that gets triggered by the submit button in the edit form

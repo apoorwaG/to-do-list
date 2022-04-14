@@ -1,5 +1,8 @@
 import Plus from './assets/icons/plus-thick.svg';
 import Delete from './assets/icons/delete-svgrepo-com(1).svg';
+import Edit from './assets/icons/edit-svgrepo-com.svg';
+import Trash from './assets/icons/trash-svgrepo-com.svg';
+import { addDays, format } from 'date-fns';
 
 
 // DOM controller; adds stuff to and removes stuff from dom
@@ -136,26 +139,34 @@ const displayController = (() => {
         const toDoNode = document.querySelector(`[data-todoid="${todoId}"][data-projectid="${projectId}"]`);
         // toDoNode.textContent = JSON.stringify(item);
         toDoNode.querySelector(".title").textContent = item.title;
-        toDoNode.querySelector(".dueDate").textContent = item.dueDate;
+        const formattedDate = format(addDays(item.dueDate, 1), "MMM dd yy");
+        toDoNode.querySelector(".dueDate").textContent = formattedDate;
     };
 
     // adding toDos to a project
-    // each toDo element has a toDo Id, project Id, and a delete and edit button with those ids
+    // each toDo element has a toDo Id, project Id, and a delete and edit button, and a checkbox with those ids
     // return the element after creation
     const addToProject = (projectId, item, itemId) => {
         const toDoSection = document.querySelector('.toDos');
+
         const toDo = document.createElement("div");
         toDo.setAttribute("data-todoid", `${itemId}`);
         toDo.setAttribute("data-projectid", `${projectId}`);
-        // toDo.textContent = JSON.stringify(item);
+
+        // add status checkbox
+        toDo.appendChild(createStatusToggle(item.status, projectId, itemId));
+
+        // add title and date
         createToDoNode(item).forEach((node) => {toDo.appendChild(node)});
-        // toDo.appendChild(createToDoNode(item));
+
+        // add delete and edit buttons
         addItemActionButtons(toDo, projectId, itemId, item.status);
         toDoSection.appendChild(toDo);
         return toDo;
     };
 
     // ceate a horizontal toDoList item and return it
+    // function returns the title and date nodes
     const createToDoNode = (item) => {
         const title = document.createElement("div");
         title.classList.add("title");
@@ -163,7 +174,8 @@ const displayController = (() => {
 
         const dueDate = document.createElement("div");
         dueDate.classList.add("dueDate");
-        dueDate.textContent = item.dueDate;
+        const formattedDate = format(addDays(item.dueDate, 1), "MMM dd yy");
+        dueDate.textContent = formattedDate;
 
         return [title, dueDate];
 
@@ -192,9 +204,9 @@ const displayController = (() => {
 
     // function to add edit and delete buttons to the DOM toDo element
     const addItemActionButtons = (toDo, projectId, itemId, status) => {
-        toDo.appendChild(createStatusToggle(status, projectId, itemId));
-        toDo.appendChild(createActionItemButton(projectId, itemId, "Delete"));
+        // toDo.appendChild(createStatusToggle(status, projectId, itemId));
         toDo.appendChild(createActionItemButton(projectId, itemId, "Edit"));
+        toDo.appendChild(createActionItemButton(projectId, itemId, "Delete"));
     };
 
     // function to create a checkbox with the given attributes, and return it
@@ -211,16 +223,35 @@ const displayController = (() => {
 
     // create a button with the given attributes and return the element
     const createActionItemButton = (projectId, itemId, textC) => {
-        const button = document.createElement("button");
-        button.setAttribute("data-projectid", `${projectId}`);
-        button.setAttribute("data-todoid", `${itemId}`);
-        button.textContent = textC;
-        if(textC === "Delete"){
-            button.classList.add("delete");
-        } else {
-            button.classList.add("edit");
+
+
+        // const button = document.createElement("button");
+        // button.setAttribute("data-projectid", `${projectId}`);
+        // button.setAttribute("data-todoid", `${itemId}`);
+        // button.textContent = textC;
+        // if(textC === "Delete"){
+        //     button.classList.add("delete");
+        // } else {
+        //     button.classList.add("edit");
+        // }
+        // return button;
+
+        const div = document.createElement("div");
+        div.setAttribute("data-projectid", `${projectId}`);
+        div.setAttribute("data-todoid", `${itemId}`);
+        const icon = new Image();
+        if(textC === "Delete") {
+            icon.src = Trash;
+            div.classList.add("delete");
+            div.appendChild(icon);
         }
-        return button;
+        else {
+            icon.src = Edit;
+            div.classList.add("edit");
+            div.appendChild(icon);
+        }
+        
+        return div;
     };
     
 
