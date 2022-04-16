@@ -33,7 +33,7 @@ const toDoModule = (() => {
         }
         console.log(`Project name: ${projects[projectId].getName()}`);
         projects[projectId].visualize();
-        return projects[projectId];
+        return projects[projectId].getToDos();
     };
 
     // get number of items/toDos in a project
@@ -94,7 +94,14 @@ const toDoModule = (() => {
         projects[projectId].toggleItemStatus(todoId);
     };
 
-    return { getNumProjects, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject, getItemInProject, editToDoInProject, toggleItemStatus };
+    const getDescriptionProjectItem = (projectId, todoId) => {
+        if (!Boolean(projects[projectId])){
+            throw new Error("Cannot get description of project that doesn't exist!");
+        }
+        return projects[projectId].getDescription(todoId);
+    };
+
+    return { getNumProjects, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject, getItemInProject, editToDoInProject, toggleItemStatus, getDescriptionProjectItem };
 
 })();
 

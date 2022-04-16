@@ -89,9 +89,9 @@ const logicController = (() => {
         const projectNode = event.target;
         const projectId = projectNode.getAttribute("data-projectid");
         // display internal project to do items
-        const project = toDoModule.viewProject(projectId);
+        const toDos = toDoModule.viewProject(projectId);
         // display the project to Do items in the DOM
-        const toDoNodes = displayController.viewProject(project, projectId);
+        const toDoNodes = displayController.viewProject(toDos, projectId);
         // call function to add event listeners to each toDo node buttons
         toDoNodes.forEach(addActionListeners);
         // show the add item button as well
@@ -158,13 +158,6 @@ const logicController = (() => {
         return true;
     };
 
-    const getArrangedDate = (fullDate) => {
-        const date = fullDate.split('-');
-        const arrangedDate = `${date[1]}-${date[2]}-${date[0]}`;
-        console.log(arrangedDate);
-        return new Date(`${arrangedDate}`);
-    };
-
     // extract data from the form, package into an item object, and return it
     const getFormData = (form) => {
         const item = {
@@ -174,7 +167,7 @@ const logicController = (() => {
         };
 
         console.log(form.querySelector(`input[type="date"]`).value);
-        // console.log(getArrangedDate(form.querySelector(`input[type="date"]`).value));
+        console.log(item.dueDate);
 
         let priorityValue = null;
         const priorityOptions = form.querySelectorAll(`input[type="radio"]`);
@@ -225,6 +218,9 @@ const logicController = (() => {
 
         const checkBox = toDo.querySelector(`input[type="checkBox"]`);
         checkBox.addEventListener('click', toggleItemStatus);
+
+        const title = toDo.querySelector(".title");
+        title.addEventListener('click', toggleDescription);
     };
 
     // function that gets triggered by the checkBox input
@@ -232,6 +228,20 @@ const logicController = (() => {
         const projectId = event.target.getAttribute("data-projectid");
         const itemId = event.target.getAttribute("data-todoid");
         toDoModule.toggleItemStatus(projectId, itemId);
+        displayController.toggleItemStatus(projectId, itemId);
+    };
+
+    // function that gets triggered by clicking the title of toDo
+    const toggleDescription = (event) => {
+        const toDoNode = event.currentTarget.parentNode.parentNode;
+
+        const projectId = toDoNode.getAttribute("data-projectid");
+        const todoId = toDoNode.getAttribute("data-todoid");
+
+        const text = toDoModule.getDescriptionProjectItem(projectId, todoId);
+        displayController.toggleDescription(toDoNode, text);
+
+        event.stopPropagation();
     };
 
     // function that gets triggered by the delete item button

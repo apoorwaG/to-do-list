@@ -61,7 +61,14 @@ const projectFactory = (name) => {
         }
     };
 
-    return { getName, add, remove, getItem, getToDos, getNumToDos, editToDo, toggleItemStatus, visualize };
+    const getDescription = (itemId) => {
+        if (!Boolean(toDos[itemId])) {
+            throw new Error("Cannot find item in this project!")
+        }
+        return toDos[itemId].getDescription();
+    };
+
+    return { getName, add, remove, getItem, getToDos, getNumToDos, editToDo, toggleItemStatus, visualize, getDescription };
 };
 
 export {

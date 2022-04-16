@@ -109,17 +109,6 @@ const displayController = (() => {
         }
     };
 
-    // remove project as well as the to do list items
-    // also remove the add item button if it's displayed
-    // also remove the add item FORM if its's displayed
-    const removeProject = (projectNode) => {
-        clearContentSection();
-        const projectsSection = document.querySelector(".sidebar .projects");
-        projectsSection.removeChild(projectNode);
-        console.log("Deleted project from sidebar");
-        
-    };
-
     const clearContentSection = () => {
         deleteAllItems();
         const contentSection = document.querySelector(".content");
@@ -133,6 +122,17 @@ const displayController = (() => {
         }
     }
 
+    // remove project as well as the to do list items
+    // also remove the add item button if it's displayed
+    // also remove the add item FORM if its's displayed
+    const removeProject = (projectNode) => {
+        clearContentSection();
+        const projectsSection = document.querySelector(".sidebar .projects");
+        projectsSection.removeChild(projectNode);
+        console.log("Deleted project from sidebar");
+        
+    };
+
     // edit toDo item in a project
     // new data is in the item object
     const editToDo = (projectId, todoId, item) => {
@@ -141,6 +141,22 @@ const displayController = (() => {
         toDoNode.querySelector(".title").textContent = item.title;
         const formattedDate = format(addDays(item.dueDate, 1), "MMM dd yy");
         toDoNode.querySelector(".dueDate").textContent = formattedDate;
+        
+        // update priority class
+        const priorityClasses = ["low", "medium", "high"];
+        priorityClasses.forEach(type => {
+            if (toDoNode.classList.contains(type)) {
+                toDoNode.classList.remove(type);
+            }
+        });
+
+        toDoNode.classList.add(item.priority);
+
+        // update description if it is toggled
+        const desc = toDoNode.querySelector(".desc");
+        if (desc) {
+            desc.textContent = item.description;
+        }
     };
 
     // adding toDos to a project
@@ -153,15 +169,26 @@ const displayController = (() => {
         toDo.setAttribute("data-todoid", `${itemId}`);
         toDo.setAttribute("data-projectid", `${projectId}`);
 
+        const first = document.createElement("div");
+
         // add status checkbox
-        toDo.appendChild(createStatusToggle(item.status, projectId, itemId));
+        first.appendChild(createStatusToggle(item.status, projectId, itemId));
+        // gray background color depending on item status
+        setToDoBackground(toDo, item.status);
 
         // add title and date
-        createToDoNode(item).forEach((node) => {toDo.appendChild(node)});
+        createToDoNode(item).forEach((node) => {first.appendChild(node)});
 
         // add delete and edit buttons
-        addItemActionButtons(toDo, projectId, itemId, item.status);
+        addItemActionButtons(first, projectId, itemId, item.status);
+
+        toDo.appendChild(first);
+
         toDoSection.appendChild(toDo);
+
+        // add priority class
+        toDo.classList.add(item.priority);
+
         return toDo;
     };
 
@@ -186,9 +213,9 @@ const displayController = (() => {
     // projectId: id of the project in the DOM
     // gets toDos from the internal projects module, adds it to the DOM, and adds button to each to do
     // also returns an array of toDo item DOM nodes
-    const viewProject = (project, projectId) => {
-        const projectNodes = []
-        const toDos = project.getToDos();
+    const viewProject = (toDos, projectId) => {
+        const projectNodes = [];
+        // const toDos = project.getToDos();
         toDos.forEach((toDo) => {
             const item = {
                 title: toDo.getTitle(),
@@ -209,6 +236,29 @@ const displayController = (() => {
         toDo.appendChild(createActionItemButton(projectId, itemId, "Delete"));
     };
 
+    // function to set background on DOM toDo element, given status boolean
+    // if status is true, item is marked and is therefore complete: gray background
+    const setToDoBackground = (toDoNode, status) => {
+        if (status === true){
+            // console.log("must be gray");
+            toDoNode.setAttribute('style', 'background-color: lightgray');
+        }
+    };
+
+    // function to toggle status of DOM toDo element
+    const toggleItemStatus = (projectId, itemId) => {
+        const toDoNode = document.querySelector(`div[data-projectid="${projectId}"][data-todoid="${itemId}"]`);
+        console.log(toDoNode);
+        if (toDoNode.getAttribute("style")){
+            console.log("this is gray. time to remove gray");
+            // toDoNode.style.removeProperty("background-color");
+            toDoNode.removeAttribute("style");
+        } else {
+            toDoNode.setAttribute("style", "background-color: lightgray;");
+        }
+        console.log(toDoNode);
+    };
+
     // function to create a checkbox with the given attributes, and return it
     const createStatusToggle = (status, projectId, itemId) => {
         const checkBox = document.createElement("input");
@@ -221,20 +271,22 @@ const displayController = (() => {
         return checkBox;
     };
 
+    // function to toggle the description section of a toDo node
+    const toggleDescription = (toDoNode, description) => {
+        if (toDoNode.querySelector(".desc")) {
+            console.log("desc already exists! time to remove");
+            toDoNode.removeChild(toDoNode.querySelector(".desc"));
+        } else {
+            const descSection = document.createElement("div");
+            descSection.classList.add("desc");
+            descSection.textContent = description;
+
+            toDoNode.appendChild(descSection);
+        }
+    };
+
     // create a button with the given attributes and return the element
     const createActionItemButton = (projectId, itemId, textC) => {
-
-
-        // const button = document.createElement("button");
-        // button.setAttribute("data-projectid", `${projectId}`);
-        // button.setAttribute("data-todoid", `${itemId}`);
-        // button.textContent = textC;
-        // if(textC === "Delete"){
-        //     button.classList.add("delete");
-        // } else {
-        //     button.classList.add("edit");
-        // }
-        // return button;
 
         const div = document.createElement("div");
         div.setAttribute("data-projectid", `${projectId}`);
@@ -367,7 +419,7 @@ const displayController = (() => {
         alert(message);
     };
 
-    return {fillAddProjectButton, toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, removeFromProject, displayErrorMessage };
+    return {fillAddProjectButton, toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, toggleItemStatus, removeFromProject, displayErrorMessage, toggleDescription };
 
 })();
 

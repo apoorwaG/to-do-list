@@ -4,6 +4,9 @@ html {
     --margin-value: 2rem;
     --add-button-background: rgb(99, 168, 99);
     --header-background: rgb(223, 168, 101);
+    --low-priority-bg: rgba(169, 241, 169, 0.699);
+    --medium-priority-bg: rgb(235, 235, 134);
+    --high-priority-bg: rgb(252, 133, 133);
     /* --header-background: #65A30D; */
     /* --header-background: #FDBA74;
     --add-button-background: #FB923C; */
@@ -186,18 +189,44 @@ body > * {
     transform: scale(1.03);
 }
 
+.toDos {
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+}
+
+.toDos > div {
+    display: grid;
+    grid-template-rows: auto auto;
+    max-width: 1000px;
+    padding: 0.4rem 0.1rem;
+    border-radius: 0.5rem;
+}
+
 /* style each toDo item */
-.toDos > * {
+.toDos > div > div:first-child {
     display: flex;
     column-gap: 20px;
     align-items: center;
+}
+
+.low {
+    background-color: var(--low-priority-bg);
+}
+
+.medium {
+    background-color: var(--medium-priority-bg);
+}
+
+.high {
+    background-color: var(--high-priority-bg);
 }
 
 .toDos > div {
     font-size: 1.1rem;
 }
 
-.toDos > div > .title {
+.toDos > div .title {
     flex: 1;
     max-width: 600px;
 }
