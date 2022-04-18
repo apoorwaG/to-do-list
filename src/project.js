@@ -1,4 +1,5 @@
 import { toDoFactory } from "./toDo";
+import { isYesterday } from "date-fns";
 
 // project factory
 const projectFactory = (name) => {
@@ -68,7 +69,23 @@ const projectFactory = (name) => {
         return toDos[itemId].getDescription();
     };
 
-    return { getName, add, remove, getItem, getToDos, getNumToDos, editToDo, toggleItemStatus, visualize, getDescription };
+    // return an array of toDo items in this project whose due date is today
+    const getTodayItems = () => {
+        if (toDos.length == 0) {
+            return toDos;
+        }
+        const dueToday = [];
+        for (let i = 0; i < toDos.length; i++){
+            let dueDate = toDos[i].getDueDate();
+            if (isYesterday(dueDate)) {
+                dueToday.push(toDos[i]);
+            }
+        }
+
+        return dueToday;
+    };
+
+    return { getName, add, remove, getItem, getToDos, getNumToDos, editToDo, toggleItemStatus, visualize, getDescription, getTodayItems };
 };
 
 export {

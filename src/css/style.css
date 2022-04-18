@@ -45,6 +45,22 @@ body > * {
     padding-top: var(--outer-padding-value)
 }
 
+.currents {
+    display: grid;
+    grid-template-rows: auto auto;
+    row-gap: 1rem;
+}
+
+.sidebar .currents > div {
+    font-size: 1.1rem;
+    padding: 0.5rem 0.3rem;
+    border-radius: 0.2rem;
+}
+
+.sidebar .currents div:last-child {
+    margin-bottom: 1rem;
+}
+
 .sidebar .projects {
     font-weight: bold;
     font-size: 1.2rem;
@@ -63,13 +79,15 @@ body > * {
     border-radius: 0.2rem;
 }
 
-.sidebar .projects div:hover {
+.sidebar .projects div:hover,
+.sidebar .currents div:hover {
     transform: scale(1.02);
     cursor: pointer;
     background-color: lightgray;
 }
 
-.sidebar .projects div:active {
+.sidebar .projects div:active,
+.sidebar .currents div:active {
     transform: scale(1);
 }
 
@@ -199,7 +217,7 @@ body > * {
     display: grid;
     grid-template-rows: auto auto;
     max-width: 1000px;
-    padding: 0.4rem 0.1rem;
+    padding: 0.8rem 0.4rem;
     border-radius: 0.5rem;
 }
 
@@ -231,6 +249,10 @@ body > * {
     max-width: 600px;
 }
 
+.toDos > div .title:hover {
+    cursor: pointer;
+}
+
 .toDos > div img {
     width: 2rem;
 }
@@ -243,6 +265,13 @@ body > * {
 .toDos > div .edit:active,
 .toDos > div .delete:active {
     transform: scale(0.95);
+}
+
+.toDos > div .desc {
+    margin-left: 2.5rem;
+    color: darkslategray;
+    font-size: 0.9rem;
+    max-width: 600px;
 }
 
 .footer {

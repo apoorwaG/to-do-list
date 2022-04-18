@@ -28,6 +28,8 @@ const displayController = (() => {
 
     // function that toggles the hidden class for a given element
     const toggleDisplay = (element) => {
+        if (element == null) return;
+        
         if(element.style.display === "none"){
             element.style.display = "block";
         } else {
@@ -211,10 +213,10 @@ const displayController = (() => {
     // function to display project items in the DOM
     // project: internal project object
     // projectId: id of the project in the DOM
-    // gets toDos from the internal projects module, adds it to the DOM, and adds button to each to do
-    // also returns an array of toDo item DOM nodes
+    // gets toDos from the internal projects module, adds it to the DOM, and adds button to each toDo
+    // also returns an array of toDo DOM nodes
     const viewProject = (toDos, projectId) => {
-        const projectNodes = [];
+        const toDoNodes = [];
         // const toDos = project.getToDos();
         toDos.forEach((toDo) => {
             const item = {
@@ -224,9 +226,9 @@ const displayController = (() => {
                 priority: toDo.getPriority(),
                 status: toDo.getStatus(),
             }   
-            projectNodes.push(addToProject(projectId, item, toDo.getId()));
+            toDoNodes.push(addToProject(projectId, item, toDo.getId()));
         });
-        return projectNodes;
+        return toDoNodes;
     };
 
     // function to add edit and delete buttons to the DOM toDo element
@@ -248,7 +250,6 @@ const displayController = (() => {
     // function to toggle status of DOM toDo element
     const toggleItemStatus = (projectId, itemId) => {
         const toDoNode = document.querySelector(`div[data-projectid="${projectId}"][data-todoid="${itemId}"]`);
-        console.log(toDoNode);
         if (toDoNode.getAttribute("style")){
             console.log("this is gray. time to remove gray");
             // toDoNode.style.removeProperty("background-color");
@@ -256,7 +257,6 @@ const displayController = (() => {
         } else {
             toDoNode.setAttribute("style", "background-color: lightgray;");
         }
-        console.log(toDoNode);
     };
 
     // function to create a checkbox with the given attributes, and return it

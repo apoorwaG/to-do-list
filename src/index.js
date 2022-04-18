@@ -8,6 +8,60 @@ import { format, addDays } from 'date-fns';
 // creates all event listeners here
 const logicController = (() => {
 
+    // function to run as soon as app starts: initialize today/this week and toDos for today's module
+    const initializeToday = () => {
+        const sidebar = document.querySelector(".sidebar");
+        const pSection = document.querySelector(".projects");
+
+        const currentSection = document.createElement("div");
+        currentSection.classList.add("currents");
+
+        const today = document.createElement("div");
+        today.classList.add("current");
+        today.textContent = "Today"
+        today.addEventListener('click', openToday);
+
+        const thisWeek = document.createElement("div");
+        thisWeek.classList.add("current");
+        thisWeek.textContent = "This Week";
+        thisWeek.addEventListener('click', openThisWeek);
+
+        currentSection.appendChild(today);
+        currentSection.appendChild(thisWeek);
+
+        sidebar.insertBefore(currentSection, pSection);
+    };
+
+    const openToday = (event) => {
+        console.log("ToDos due today:");
+        displayController.clearContentSection();
+
+        const projectAndToDos = toDoModule.getTodayItems();
+
+        for (let i = 0; i < projectAndToDos.length; i++) {
+
+            let projectId = projectAndToDos[i].projectId;
+            // projectAndToDos[i].items.forEach(item => {
+            //     let toDo = displayController.addToProject(projectId, item, item.getId());
+            //     addActionListeners(toDo);
+            // });
+            const toDoNodes = displayController.viewProject(projectAndToDos[i].items, projectId);
+            toDoNodes.forEach(addActionListeners);
+        }
+        event.stopPropagation();
+    }
+
+    const openThisWeek = (event) => {
+        console.log("ToDos due this week:");
+        displayController.clearContentSection();
+
+        const projectAndToDos = toDoModule.getThisWeekItems();
+
+        event.stopPropagation();
+    };
+
+    initializeToday();
+
     // function that gets triggered by the add project button
     // renders the field for adding projects
     const renderAddProjectForm = (event) => {
