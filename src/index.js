@@ -8,6 +8,7 @@ import { format, addDays } from 'date-fns';
 // creates all event listeners here
 const logicController = (() => {
 
+
     // function to run as soon as app starts: initialize today/this week and toDos for today's module
     const initializeToday = () => {
         const sidebar = document.querySelector(".sidebar");
@@ -56,6 +57,11 @@ const logicController = (() => {
         displayController.clearContentSection();
 
         const projectAndToDos = toDoModule.getThisWeekItems();
+        for (let i = 0; i < projectAndToDos.length; i++) {
+            let projectId = projectAndToDos[i].projectId;
+            const toDoNodes = displayController.viewProject(projectAndToDos[i].items, projectId);
+            toDoNodes.forEach(addActionListeners);
+        }
 
         event.stopPropagation();
     };

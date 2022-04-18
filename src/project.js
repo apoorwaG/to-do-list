@@ -1,5 +1,5 @@
 import { toDoFactory } from "./toDo";
-import { isYesterday } from "date-fns";
+import { addDays, isThisWeek, isYesterday } from "date-fns";
 
 // project factory
 const projectFactory = (name) => {
@@ -85,7 +85,21 @@ const projectFactory = (name) => {
         return dueToday;
     };
 
-    return { getName, add, remove, getItem, getToDos, getNumToDos, editToDo, toggleItemStatus, visualize, getDescription, getTodayItems };
+    // return an array of toDo items in this current week where duedate is in the current week
+    const getThisWeekItems = () => {
+        if (toDos.length == 0) return toDos;
+
+        const dueThisWeek = []
+        for (let i = 0; i < toDos.length; i++) {
+            let dueDate = toDos[i].getDueDate();
+            if (isThisWeek(addDays(dueDate, 1))) {
+                dueThisWeek.push(toDos[i]);
+            }
+        }
+        return dueThisWeek;
+    }
+
+    return { getName, add, remove, getItem, getToDos, getNumToDos, editToDo, toggleItemStatus, visualize, getDescription, getTodayItems, getThisWeekItems };
 };
 
 export {

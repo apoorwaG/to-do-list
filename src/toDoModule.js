@@ -124,7 +124,30 @@ const toDoModule = (() => {
         return projectAndToDos;
     };
 
-    return { getNumProjects, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject, getItemInProject, editToDoInProject, toggleItemStatus, getDescriptionProjectItem, getTodayItems };
+    // returns an array of objects for each project
+    // each object has a projectId, and an array of toDo items
+    const getThisWeekItems = () => {
+        const projectAndToDos = [];
+        for (let i = 0; i < projects.length; i++) {
+            // if project exists internally
+            if (Boolean(projects[i])) {
+                let thisWeekItems = projects[i].getThisWeekItems();
+                // if project has items due today
+                if (thisWeekItems.length > 0) {
+                    let project = {projectId: i, items: thisWeekItems};
+                    projectAndToDos.push(project);
+                    console.log(`Project: ${projects[i].getName()}`)
+                    for (let k = 0; k < thisWeekItems.length; k++){
+                        console.log(thisWeekItems[k].summarize());
+                    }
+                }
+            }
+        }
+        console.log(projectAndToDos);
+        return projectAndToDos;
+    };
+
+    return { getNumProjects, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject, getItemInProject, editToDoInProject, toggleItemStatus, getDescriptionProjectItem, getTodayItems, getThisWeekItems };
 
 })();
 
