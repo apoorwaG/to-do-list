@@ -2,7 +2,8 @@ import './css/style.css';
 
 import { toDoModule } from './toDoModule';
 import { displayController } from './displayController';
-import { format, addDays } from 'date-fns'; 
+import { format, addDays } from 'date-fns';
+import { storageController } from './storage'; 
 
 // logic/reactivity controller; calls the functions on the displayController as well as the internal toDoList module
 // creates all event listeners here
