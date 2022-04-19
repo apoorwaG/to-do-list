@@ -111,6 +111,9 @@ const logicController = (() => {
         const projectName = form.querySelector("input").value;
         // add the project and get its internal id
         const projectId = toDoModule.addProject(projectName);
+        // add the project to localStorage
+        storageController.addProject(projectName, projectId);
+
         // add project on DOM and get the node
         const project = displayController.addProject(projectName, projectId);
         // add listener to project
@@ -119,6 +122,7 @@ const logicController = (() => {
         project.querySelector(".deleteProjectButton").addEventListener('click', (event) => {
             displayController.removeProject(project);
             toDoModule.removeProject(projectId);
+            storageController.removeProject(projectId);
             event.stopPropagation();
         });
         return project;
@@ -256,6 +260,9 @@ const logicController = (() => {
         // add item to internal toDoModule and get the id
         const itemId = toDoModule.addToProject(projectId, item);
 
+        // add item to localStorage
+        storageController.addToProject(projectId, itemId, item);
+
         // add item to the DOM
         const toDo = displayController.addToProject(projectId, item, itemId);
 
@@ -311,6 +318,7 @@ const logicController = (() => {
         const todoId = event.currentTarget.getAttribute("data-todoid");
 
         toDoModule.removeFromProject(projectId, todoId);
+        storageController.removeFromProject(projectId, todoId);
         displayController.removeFromProject(projectId, todoId);
         event.stopPropagation();
     };
