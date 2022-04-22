@@ -180,7 +180,7 @@ const logicController = (() => {
         // display internal project to do items
         const toDos = toDoModule.viewProject(projectId);
         // display the project to Do items in the DOM
-        const toDoNodes = displayController.viewProject(toDos, projectId);
+        const toDoNodes = displayController.viewProject(toDos, projectId, toDoModule.getProjectName(projectId));
         // call function to add event listeners to each toDo node buttons
         toDoNodes.forEach(addActionListeners);
         // show the add item button as well

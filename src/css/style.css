@@ -207,6 +207,11 @@ body > * {
     transform: scale(1.03);
 }
 
+.content .projectTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
 .toDos {
     display: flex;
     flex-direction: column;

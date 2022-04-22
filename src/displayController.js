@@ -114,6 +114,11 @@ const displayController = (() => {
     const clearContentSection = () => {
         deleteAllItems();
         const contentSection = document.querySelector(".content");
+
+        const titleSection = document.querySelector(".content .projectTitle");
+        if(titleSection !== null) {
+            contentSection.removeChild(titleSection);
+        }
         const addItemButton = document.querySelector(".content .addButton");
         if(addItemButton !== null){
             contentSection.removeChild(addItemButton);
@@ -210,12 +215,26 @@ const displayController = (() => {
 
     };
 
+    const addTitle = (projectName) => {
+        const toDos = document.querySelector(".content .toDos");
+
+        const title = document.createElement("div");
+        title.classList.add("projectTitle");
+        title.textContent = projectName;
+
+        document.querySelector(".content").insertBefore(title, toDos);
+    };
+
     // function to display project items in the DOM
     // project: internal project object
     // projectId: id of the project in the DOM
     // gets toDos from the internal projects module, adds it to the DOM, and adds button to each toDo
     // also returns an array of toDo DOM nodes
-    const viewProject = (toDos, projectId) => {
+    const viewProject = (toDos, projectId, projectName=null) => {
+        if (Boolean(projectName)) {
+            addTitle(projectName);
+        }
+
         const toDoNodes = [];
         // const toDos = project.getToDos();
         toDos.forEach((toDo) => {

@@ -26,6 +26,14 @@ const toDoModule = (() => {
         numProjects--;
     };
 
+    // get name of an existing project given its id
+    const getProjectName = (projectId) => {
+        if (!Boolean(projects[projectId])) {
+            throw new Error("Cannot get name of a project that doesn't exist!");
+        }
+        return projects[projectId].getName();
+    }
+
     // display all items on a project and return the project
     const viewProject = (projectId) => {
         if (!Boolean(projects[projectId])) {
@@ -154,7 +162,7 @@ const toDoModule = (() => {
         return projectAndToDos;
     };
 
-    return { getNumProjects, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject, getItemInProject, editToDoInProject, toggleItemStatus, getDescriptionProjectItem, getTodayItems, getThisWeekItems };
+    return { getNumProjects, getProjectName, addProject, removeProject, viewProject, getNumToDos, addToProject, removeFromProject, getItemInProject, editToDoInProject, toggleItemStatus, getDescriptionProjectItem, getTodayItems, getThisWeekItems };
 
 })();
 
