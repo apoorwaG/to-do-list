@@ -84,7 +84,7 @@ const logicController = (() => {
         form.querySelector("button.addProject").addEventListener('click', () => {
             // validate form first
             if(validateAddProjectForm(form)) {
-                const project = addProject(form);
+                const project = addProject(form.querySelector("input").value);
                 displayController.toggleDisplay(addProjectButton);
                 // open this project
                 openProject({target: project});
@@ -100,19 +100,43 @@ const logicController = (() => {
         });
     };
 
-    const addProjectButton = document.querySelector(".sidebar .addButton");
-    // populate add project button
-    displayController.fillAddProjectButton(addProjectButton);
-    addProjectButton.addEventListener('click', renderAddProjectForm);
+
+    // add contrent and event listener to add project button
+    const rigAddProjectButton = () => {
+        const addProjectButton = document.querySelector(".sidebar .addButton");
+        // populate add project button
+        displayController.fillAddProjectButton(addProjectButton);
+        addProjectButton.addEventListener('click', renderAddProjectForm);
+    };
+
+    rigAddProjectButton();
+
+    // function to initialize app: gets any projects an toDos in localStorage and saves them internally in 
+    // toDoModule, and displays the projects on DOM
+    const initializeApp = () => {
+        const projectsAndToDos = storageController.initializeApp();
+
+        for (let projectId in projectsAndToDos) {
+            addProject(projectsAndToDos[projectId]["name"], true);
+            for (let itemId in projectsAndToDos[projectId]["items"]) {
+                let item = projectsAndToDos[projectId]["items"][itemId];
+                const dateFormatted = new Date(item["dueDate"]);
+                item.dueDate = dateFormatted;
+                toDoModule.addToProject(projectId, item);
+            }
+        }
+    };
 
     // function that gets triggered by the add project button in the add project form
     // assumes form data is validated
-    const addProject = (form) => {
-        const projectName = form.querySelector("input").value;
+    const addProject = (projectName, initial=false) => {
         // add the project and get its internal id
         const projectId = toDoModule.addProject(projectName);
-        // add the project to localStorage
-        storageController.addProject(projectName, projectId);
+
+        // add the project to localStorage if not initial boot
+        if (initial === false) {
+            storageController.addProject(projectName, projectId);
+        }
 
         // add project on DOM and get the node
         const project = displayController.addProject(projectName, projectId);
@@ -296,6 +320,7 @@ const logicController = (() => {
         const projectId = event.target.getAttribute("data-projectid");
         const itemId = event.target.getAttribute("data-todoid");
         toDoModule.toggleItemStatus(projectId, itemId);
+        storageController.toggleItemStatus(projectId, itemId);
         displayController.toggleItemStatus(projectId, itemId);
     };
 
@@ -377,9 +402,14 @@ const logicController = (() => {
         // edit item data in internal module
         toDoModule.editToDoInProject(projectId, todoId, item);
 
+        // edit item data in localStorage
+        storageController.editToDoInProject(projectId, todoId, item);
+
         // edit item data in DOM
         displayController.editToDo(projectId, todoId, item);
     };
 
+
+    initializeApp();
 
 })();

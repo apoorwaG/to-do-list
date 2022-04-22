@@ -57,16 +57,23 @@ const toDoModule = (() => {
         let description;
         let dueDate;
         let priority;
+        let status;
         try {
             title = item.title;
             description = item.description;
             dueDate = item.dueDate;
             priority = item.priority;
+            if ('status' in item) {
+                status = item.status;
+            } else {
+                status = false;
+            }
         } catch (error) {
             throw error;
         }
+
         const id = getNumToDos(projectId);
-        const toDo = toDoFactory(id, title, description, dueDate, priority);
+        const toDo = toDoFactory(id, title, description, dueDate, priority, status);
         projects[projectId].add(toDo);
         return id;
     };
