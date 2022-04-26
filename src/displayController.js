@@ -350,7 +350,7 @@ const displayController = (() => {
 
         const fields = [{for: "title", type: "text", textC: "Title"},
                         {for: "desc", type: "textarea", textC: "Description"},
-                        {for: "date", type: "date", textC: "Date"}];
+                        {for: "date", type: "date", textC: "Date:"}];
         fields.forEach((field) => {
             const row = document.createElement("div");
             row.classList.add("row");
@@ -381,11 +381,19 @@ const displayController = (() => {
         });
 
 
-        const row = document.createElement("div");
+        // const row = document.createElement("div");
+        const row = itemForm.querySelector(".row:nth-child(3)");
+        const subrow = document.createElement("div");
+        subrow.classList.add("priorityRow");
+
         const radioLabel = document.createElement("div");
         radioLabel.classList.add("radioLabel");
         radioLabel.textContent = "Priority: ";
-        row.appendChild(radioLabel);
+        // const priorityIcon = new Image();
+        // priorityIcon.src = Priority;
+        // priorityIcon.alt = "Priority";
+        // radioLabel.appendChild(priorityIcon);
+        subrow.appendChild(radioLabel);
 
         const options = [{id: "low", textC: "Low"}, {id: "medium", textC: "Medium"}, {id: "high", textC: "High"}];
         options.forEach((option) => {
@@ -398,14 +406,15 @@ const displayController = (() => {
                 input.required = true;
                 input.checked = true;
             }
-            row.appendChild(input);
+            subrow.appendChild(input);
 
             const label = document.createElement("label");
             label.setAttribute("for", option.id);
             label.textContent = option.textC;
-            row.appendChild(label);
+            subrow.appendChild(label);
         });
 
+        row.appendChild(subrow)
         itemForm.appendChild(row);
 
         const submitButton = document.createElement("button");
@@ -446,6 +455,13 @@ const displayController = (() => {
         } else {
             overlay.classList.add("active");
         }
+
+        // const toDoForm = document.querySelector(".content .addItemForm");
+        // if (toDoForm.classList.contains("active")) {
+        //     toDoForm.classList.remove("active");
+        // } else {
+        //     toDoForm.classList.add("active");
+        // }
     };
 
     return {fillAddProjectButton, toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, toggleItemStatus, removeFromProject, displayErrorMessage, toggleDescription, toggleOverlay };

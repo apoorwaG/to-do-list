@@ -175,14 +175,16 @@ body {
 .content .addItemForm {
     width: clamp(500px, 50vw, 720px);
     position: fixed;
-    top: 50%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 1rem;
     background-color: white;
     border: 2px solid black;
+    border-radius: 1rem;
     box-sizing: border-box;
     z-index: 10;
+    font-size: inherit;
 }
 
 .content #overlay {
@@ -192,9 +194,10 @@ body {
     left: 0;
     bottom: 0;
     right: 0;
-    z-index: 9;
+    z-index: 5;
     opacity: 0;
     pointer-events: none;
+    transition: 50ms ease-in-out;
 }
 
 #overlay.active {
@@ -202,6 +205,9 @@ body {
     opacity: 1;
 }
 
+.addItemForm .row {
+    margin: 1rem 0;
+}
 
 .addItemForm textarea#desc {
     resize: vertical;
@@ -209,13 +215,38 @@ body {
     max-height: 300px;
 }
 
-.addItemForm .row label {
-    display: block;
+.addItemForm .row:nth-child(-n+2) label {
+    display: none;
 }
 
 .addItemForm .row input,
 .addItemForm .row textarea {
     width: 90%;
+    height: 1.3rem;
+    border-style: none;
+    border: 1px solid lightgray;
+    border-radius: 0.5rem;
+}
+
+.addItemForm .row:nth-child(3) input {
+    width: max-content;
+}
+
+.addItemForm label[for="date"], 
+.radioLabel {
+    display: inline-block;
+    width:50px;
+}
+
+.addItemForm .row:nth-child(3) {
+    display: flex;
+    align-items: center;
+}
+
+.priorityRow {
+    display: flex;
+    align-items: center;
+    margin-left: 2rem;
 }
 
 .content .addButton {
