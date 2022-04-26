@@ -202,7 +202,8 @@ const logicController = (() => {
     const renderAddItemForm = (projectId) => {
         // toggle the addItem button so it is hidden
         const addItemButton = document.querySelector(".content .addButton");
-        displayController.toggleDisplay(addItemButton);
+        // displayController.toggleDisplay(addItemButton);
+        displayController.toggleOverlay();
 
         const form = displayController.renderAddItemForm(projectId);
         const submitButton = form.querySelector("button[type=submit]");
@@ -211,7 +212,8 @@ const logicController = (() => {
                 addItemToProject(projectId, form);
                 removeAddItemForm();
                 // toggle the addItem button once done
-                displayController.toggleDisplay(addItemButton);
+                // displayController.toggleDisplay(addItemButton);
+                displayController.toggleOverlay();
             }
         });
 
@@ -219,7 +221,8 @@ const logicController = (() => {
         cancelButton.addEventListener("click", () => {
             removeAddItemForm()
             // toggle the addItem button once done
-            displayController.toggleDisplay(addItemButton);
+            // displayController.toggleDisplay(addItemButton);
+            displayController.toggleOverlay();
         });
     };
 
@@ -304,7 +307,8 @@ const logicController = (() => {
             // before rendering the edit item form, toggle the add item button display
             // toggle the add item button
             const addItemButton = document.querySelector(".content .addButton");
-            displayController.toggleDisplay(addItemButton);
+            // displayController.toggleDisplay(addItemButton);
+            displayController.toggleOverlay();
             renderEditItemForm(event);
         });
 
@@ -374,8 +378,9 @@ const logicController = (() => {
             if(validateForm(form)){
                 editItem(todoId, projectId, form);
                 removeAddItemForm();
-                // toggle the addItem button once done
-                displayController.toggleDisplay(document.querySelector(".content .addButton"));
+                // toggle the addItem button and overlay once done
+                // displayController.toggleDisplay(document.querySelector(".content .addButton"));
+                displayController.toggleOverlay();
             }
         });
 
@@ -383,8 +388,9 @@ const logicController = (() => {
         const cancelButton = form.querySelector("button[type=reset]");
         cancelButton.addEventListener("click", () => {
             removeAddItemForm();
-            // toggle the addItem button once done
-            displayController.toggleDisplay(document.querySelector(".content .addButton"));
+            // toggle the addItem button and overlay if cancelled
+            // displayController.toggleDisplay(document.querySelector(".content .addButton"));
+            displayController.toggleOverlay();
         });
 
         event.stopPropagation();
@@ -411,5 +417,11 @@ const logicController = (() => {
 
 
     initializeApp();
+
+    document.querySelector(".content #overlay").addEventListener('click', (event) => {
+        displayController.removeAddItemForm();
+        displayController.toggleOverlay();
+        event.stopPropagation();
+    });
 
 })();

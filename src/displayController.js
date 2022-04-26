@@ -438,7 +438,17 @@ const displayController = (() => {
         alert(message);
     };
 
-    return {fillAddProjectButton, toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, toggleItemStatus, removeFromProject, displayErrorMessage, toggleDescription };
+    // function to toggle overlay for addItem Form
+    const toggleOverlay = () => {
+        const overlay = document.querySelector(".content #overlay");
+        if (overlay.classList.contains("active")) {
+            overlay.classList.remove("active");
+        } else {
+            overlay.classList.add("active");
+        }
+    };
+
+    return {fillAddProjectButton, toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, toggleItemStatus, removeFromProject, displayErrorMessage, toggleDescription, toggleOverlay };
 
 })();
 
