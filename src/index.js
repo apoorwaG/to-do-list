@@ -2,7 +2,7 @@ import './css/style.css';
 
 import { toDoModule } from './toDoModule';
 import { displayController } from './displayController';
-import { format, addDays } from 'date-fns';
+import { format, addDays, isThisWeek, isToday } from 'date-fns';
 import { storageController } from './storage'; 
 
 // logic/reactivity controller; calls the functions on the displayController as well as the internal toDoList module
@@ -38,15 +38,10 @@ const logicController = (() => {
         console.log("ToDos due today:");
         displayController.clearContentSection();
 
+        displayController.addTitle("Today", "today");
         const projectAndToDos = toDoModule.getTodayItems();
-
         for (let i = 0; i < projectAndToDos.length; i++) {
-
             let projectId = projectAndToDos[i].projectId;
-            // projectAndToDos[i].items.forEach(item => {
-            //     let toDo = displayController.addToProject(projectId, item, item.getId());
-            //     addActionListeners(toDo);
-            // });
             const toDoNodes = displayController.viewProject(projectAndToDos[i].items, projectId);
             toDoNodes.forEach(addActionListeners);
         }
@@ -57,7 +52,9 @@ const logicController = (() => {
         console.log("ToDos due this week:");
         displayController.clearContentSection();
 
+        displayController.addTitle("This Week", "week");
         const projectAndToDos = toDoModule.getThisWeekItems();
+
         for (let i = 0; i < projectAndToDos.length; i++) {
             let projectId = projectAndToDos[i].projectId;
             const toDoNodes = displayController.viewProject(projectAndToDos[i].items, projectId);
@@ -193,6 +190,8 @@ const logicController = (() => {
         const projectId = projectNode.getAttribute("data-projectid");
         // display internal project to do items
         const toDos = toDoModule.viewProject(projectId);
+        // display title of project
+        displayController.addTitle(toDoModule.getProjectName(projectId))
         // display the project to Do items in the DOM
         const toDoNodes = displayController.viewProject(toDos, projectId, toDoModule.getProjectName(projectId));
         // call function to add event listeners to each toDo node buttons
@@ -427,6 +426,31 @@ const logicController = (() => {
 
         // edit item data in DOM
         displayController.editToDo(projectId, todoId, item);
+
+        let titleSection = document.querySelector(".content>div:first-child");
+        if (titleSection.classList.contains("today")) {
+            checkDateAndRemove(projectId, todoId, item.dueDate, "today");
+        }
+        if (titleSection.classList.contains("week")) {
+            checkDateAndRemove(projectId, todoId, item.dueDate, "week")
+        }
+    };
+
+    // if currently today/this week tab is open and the edited item's date is changed to something
+    // other than today/this week, remove that item from the display
+    const checkDateAndRemove = (projectId, todoId, date, timeframe) => {
+        let dateToCheck = addDays(date, 1);
+        if (timeframe == "week") {
+            if (!isThisWeek(dateToCheck)) {
+                // remove node
+                displayController.removeFromProject(projectId, todoId);
+            }
+        } else {
+            if (!isToday(dateToCheck)) {
+                // removenode
+                displayController.removeFromProject(projectId, todoId);
+            }
+        }
     };
 
 

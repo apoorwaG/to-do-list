@@ -71,31 +71,31 @@ const projectFactory = (name) => {
 
     // return an array of toDo items in this project whose due date is today
     const getTodayItems = () => {
-        if (toDos.length == 0) {
-            return toDos;
+        if (numToDos == 0) {
+            return [];
         }
         const dueToday = [];
-        for (let i = 0; i < toDos.length; i++){
-            let dueDate = toDos[i].getDueDate();
+        toDos.forEach((toDo) => {
+            let dueDate = toDo.getDueDate();
             if (isYesterday(dueDate)) {
-                dueToday.push(toDos[i]);
+                dueToday.push(toDo);
             }
-        }
+        });
 
         return dueToday;
     };
 
     // return an array of toDo items in this current week where duedate is in the current week
     const getThisWeekItems = () => {
-        if (toDos.length == 0) return toDos;
+        if (numToDos == 0) return [];
 
         const dueThisWeek = []
-        for (let i = 0; i < toDos.length; i++) {
-            let dueDate = toDos[i].getDueDate();
-            if (isThisWeek(addDays(dueDate, 1))) {
-                dueThisWeek.push(toDos[i]);
+        toDos.forEach((toDo) => {
+            let dueDate = toDo.getDueDate();
+            if (isThisWeek(dueDate)) {
+                dueThisWeek.push(toDo);
             }
-        }
+        });
         return dueThisWeek;
     }
 

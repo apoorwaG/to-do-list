@@ -124,6 +124,7 @@ const toDoModule = (() => {
             // if project exists internally
             if (Boolean(projects[i])) {
                 let todayItems = projects[i].getTodayItems();
+                console.log(todayItems);
                 // if project has items due today
                 if (todayItems.length > 0) {
                     let project = {projectId: i, items: todayItems};

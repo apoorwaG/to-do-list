@@ -215,12 +215,16 @@ const displayController = (() => {
 
     };
 
-    const addTitle = (projectName) => {
+    const addTitle = (projectName, _class=null) => {
         const toDos = document.querySelector(".content .toDos");
 
         const title = document.createElement("div");
         title.classList.add("projectTitle");
         title.textContent = projectName;
+
+        if (Boolean(_class)) {
+            title.classList.add(_class);
+        }
 
         document.querySelector(".content").insertBefore(title, toDos);
     };
@@ -231,9 +235,9 @@ const displayController = (() => {
     // gets toDos from the internal projects module, adds it to the DOM, and adds button to each toDo
     // also returns an array of toDo DOM nodes
     const viewProject = (toDos, projectId, projectName=null) => {
-        if (Boolean(projectName)) {
-            addTitle(projectName);
-        }
+        // if (Boolean(projectName)) {
+        //     addTitle(projectName);
+        // }
 
         const toDoNodes = [];
         // const toDos = project.getToDos();
@@ -455,16 +459,9 @@ const displayController = (() => {
         } else {
             overlay.classList.add("active");
         }
-
-        // const toDoForm = document.querySelector(".content .addItemForm");
-        // if (toDoForm.classList.contains("active")) {
-        //     toDoForm.classList.remove("active");
-        // } else {
-        //     toDoForm.classList.add("active");
-        // }
     };
 
-    return {fillAddProjectButton, toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, toggleItemStatus, removeFromProject, displayErrorMessage, toggleDescription, toggleOverlay };
+    return {fillAddProjectButton, toggleDisplay, renderAddProjectForm, removeAddProjectForm, addProject, removeProject, addTitle, clearContentSection, displayAddItemButton, renderAddItemForm, removeAddItemForm, viewProject, addToProject, editToDo, toggleItemStatus, removeFromProject, displayErrorMessage, toggleDescription, toggleOverlay };
 
 })();
 
