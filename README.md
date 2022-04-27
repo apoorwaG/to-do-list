@@ -1,5 +1,6 @@
 # To-do-list  
 A dynamic to-do list created using vanilla JavaScript, HTML, and CSS.  
+Demo: https://apoorwag.github.io/to-do-list/
 
 ## Features
 - add, view and delete projects
