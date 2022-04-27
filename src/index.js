@@ -10,8 +10,8 @@ import { storageController } from './storage';
 const logicController = (() => {
 
 
-    // function to run as soon as app starts: initialize today/this week and toDos for today's module
-    const initializeToday = () => {
+    // function to run after initial data is fetched upon startup: initialize today/this week and toDos for today's module
+    const initializeCurrents = () => {
         const sidebar = document.querySelector(".sidebar");
         const pSection = document.querySelector(".projects");
 
@@ -67,7 +67,6 @@ const logicController = (() => {
         event.stopPropagation();
     };
 
-    initializeToday();
 
     // function that gets triggered by the add project button
     // renders the field for adding projects
@@ -109,10 +108,20 @@ const logicController = (() => {
         addProjectButton.addEventListener('click', renderAddProjectForm);
     };
 
-    rigAddProjectButton();
+    // rigOverlay
+    const rigOverlay = () => {
+        document.querySelector(".content #overlay").addEventListener('click', (event) => {
+            displayController.removeAddItemForm();
+            displayController.toggleOverlay();
+            event.stopPropagation();
+        });
+    };
 
     // function to initialize app: gets any projects an toDos in localStorage and saves them internally in 
     // toDoModule, and displays the projects on DOM
+    // app then initializes currents section (today and this week)
+    // adds listeners to addProject button
+    // adds listener to overlay (addItem form)
     const initializeApp = () => {
         const projectsAndToDos = storageController.initializeApp();
 
@@ -125,10 +134,15 @@ const logicController = (() => {
                 toDoModule.addToProject(projectId, item);
             }
         }
+
+        initializeCurrents();
+        rigAddProjectButton();
+        rigOverlay();
     };
 
     // function that gets triggered by the add project button in the add project form
     // assumes form data is validated
+    // initial flag true if app is just started/restarted
     const addProject = (projectName, initial=false) => {
         // add the project and get its internal id
         const projectId = toDoModule.addProject(projectName);
@@ -418,10 +432,5 @@ const logicController = (() => {
 
     initializeApp();
 
-    document.querySelector(".content #overlay").addEventListener('click', (event) => {
-        displayController.removeAddItemForm();
-        displayController.toggleOverlay();
-        event.stopPropagation();
-    });
 
 })();

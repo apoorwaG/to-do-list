@@ -47,9 +47,7 @@ body {
 
 .sidebar {
     grid-column: 1;
-    padding-left: var(--outer-padding-value);
-    padding-right: var(--outer-padding-value);
-    padding-top: var(--outer-padding-value);
+    padding: var(--outer-padding-value);
     background-color:#f9e1b391;
 }
 
@@ -167,9 +165,8 @@ body {
 
 .content {
     grid-column: 2;
-    padding-left: var(--outer-padding-value);
-    padding-top: var(--outer-padding-value);
-    padding-right: var(--outer-padding-value);
+    padding: var(--outer-padding-value);
+    overflow-y: scroll;
 }
 
 .content .addItemForm {
@@ -205,6 +202,11 @@ body {
     opacity: 1;
 }
 
+
+.addItemForm {
+    font: inherit;
+}
+
 .addItemForm .row {
     margin: 1rem 0;
 }
@@ -234,8 +236,9 @@ body {
 
 .addItemForm label[for="date"], 
 .radioLabel {
-    display: inline-block;
-    width:50px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: rgb(75, 105, 105);
 }
 
 .addItemForm .row:nth-child(3) {
@@ -284,9 +287,10 @@ body {
 .toDos > div {
     display: grid;
     grid-template-rows: auto auto;
-    max-width: 1000px;
+    min-width: max-content;
     padding: 0.8rem 0.4rem;
     border-radius: 0.5rem;
+    max-width: 800px;
 }
 
 /* style each toDo item */
@@ -314,7 +318,7 @@ body {
 
 .toDos > div .title {
     flex: 1;
-    max-width: 600px;
+    max-width: 500px;
 }
 
 .toDos > div .title:hover {
